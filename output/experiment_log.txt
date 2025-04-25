@@ -1,0 +1,6 @@
+[2025-04-25 12:16:20] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-25 12:16:20] 开始数据预处理...
+[2025-04-25 12:16:20] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-25 12:21:58] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-25 12:21:58] 开始数据预处理...
+[2025-04-25 12:21:58] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
