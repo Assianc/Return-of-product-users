@@ -13,6 +13,7 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Input, LSTM, Embedding, Dropout, Concatenate
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
+from scipy import sparse
 
 # 设置随机种子，确保结果可复现
 np.random.seed(42)
@@ -23,62 +24,121 @@ class ModelBuilder:
         self.models = {}
         self.model_performances = {}
         self.feature_importances = {}
+        self.scaler = StandardScaler()
         
     def prepare_data(self, features_df, test_size=0.2):
         """
-        准备训练数据和验证数据
+        准备训练数据，避免重复创建特征
         """
-        # 分离特征和目标变量
-        # 在这个任务中，目标是预测voter_id，但我们需要先将其编码为数值
-        self.label_encoder = LabelEncoder()
-        voter_ids = features_df['voter_id'].values
-        self.label_encoder.fit(voter_ids)
-        y = self.label_encoder.transform(voter_ids)
-        
-        # 选择要使用的特征列
-        # 排除一些不需要的列，如时间戳、ID等
-        exclude_cols = ['timestamp', 'inviter_id', 'item_id', 'voter_id', 
-                         'user_id', 'user_id_voter', 'user_id_inviter_graph', 'user_id_voter_graph',
-                         'time_period']
-        
-        feature_cols = [col for col in features_df.columns if col not in exclude_cols]
-        X = features_df[feature_cols].copy()
-        
-        # 处理缺失值
-        X.fillna(0, inplace=True)
+        # 分离特征和标签
+        X = features_df.drop(['voter_id'], axis=1)
+        y = features_df['voter_id']
         
         # 处理分类特征
-        # 对于分类特征，如性别、年龄段等，可以使用one-hot编码
         cat_cols = ['user_gender', 'user_age', 'user_level', 
                     'user_gender_voter', 'user_age_voter', 'user_level_voter',
                     'cate_id']
         cat_cols = [col for col in cat_cols if col in X.columns]
         
-        if cat_cols:
-            X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+        # 记录所有特征名称
+        feature_names = []
         
-        # 标准化数值特征
-        self.scaler = StandardScaler()
-        X = pd.DataFrame(self.scaler.fit_transform(X), columns=X.columns)
+        if cat_cols:
+            # 使用稀疏矩阵进行独热编码
+            sparse_features = []
+            for col in cat_cols:
+                # 获取唯一值
+                unique_values = X[col].unique()
+                # 创建映射字典
+                value_map = {val: idx for idx, val in enumerate(unique_values)}
+                
+                # 使用稀疏矩阵直接创建
+                row_indices = []
+                col_indices = []
+                for i, val in enumerate(X[col]):
+                    if val in value_map:
+                        row_indices.append(i)
+                        col_indices.append(value_map[val])
+                
+                # 创建稀疏矩阵
+                data = np.ones(len(row_indices), dtype=np.float32)
+                sparse_matrix = sparse.csr_matrix(
+                    (data, (row_indices, col_indices)),
+                    shape=(len(X), len(unique_values))
+                )
+                sparse_features.append(sparse_matrix)
+                
+                # 添加特征名称
+                feature_names.extend([f"{col}_{val}" for val in unique_values])
+            
+            # 合并稀疏特征
+            X_sparse = sparse.hstack(sparse_features)
+            
+            # 处理数值特征
+            num_cols = [col for col in X.columns if col not in cat_cols]
+            if num_cols:
+                X_num = X[num_cols].copy()
+                
+                # 处理日期时间特征
+                for col in X_num.columns:
+                    if X_num[col].dtype == 'datetime64[ns]':
+                        # 将日期时间转换为时间戳（秒）
+                        X_num[col] = X_num[col].astype(np.int64) // 10**9
+                    elif X_num[col].dtype == 'object':
+                        try:
+                            X_num[col] = pd.to_numeric(X_num[col], errors='coerce')
+                        except:
+                            # 如果无法转换为数值，则将该列视为分类特征
+                            cat_cols.append(col)
+                            num_cols.remove(col)
+                
+                # 填充缺失值
+                X_num.fillna(X_num.mean(), inplace=True)
+                
+                # 标准化数值特征
+                X_num = pd.DataFrame(self.scaler.fit_transform(X_num), columns=num_cols)
+                X_num_sparse = sparse.csr_matrix(X_num)
+                
+                # 合并所有特征
+                X = sparse.hstack([X_sparse, X_num_sparse])
+                
+                # 添加数值特征名称
+                feature_names.extend(num_cols)
+            else:
+                X = X_sparse
+        else:
+            # 如果没有分类特征，直接处理数值特征
+            X = pd.DataFrame(self.scaler.fit_transform(X), columns=X.columns)
+            feature_names = X.columns.tolist()
+        
+        # 检查并处理稀疏矩阵中的NaN值
+        if sparse.issparse(X):
+            # 使用稀疏矩阵的方法处理NaN值
+            X = X.tocoo()
+            # 将NaN值替换为0
+            X.data = np.nan_to_num(X.data, nan=0.0)
+            # 转回CSR格式
+            X = X.tocsr()
         
         # 划分训练集和验证集
         X_train, X_val, y_train, y_val = train_test_split(
             X, y, test_size=test_size, random_state=self.random_state
         )
         
-        return X_train, X_val, y_train, y_val, X.columns
+        return X_train, X_val, y_train, y_val, feature_names
     
     def build_logistic_regression(self, X_train, y_train):
         """
         构建逻辑回归模型
         """
+        # 使用稀疏矩阵版本的逻辑回归
         model = LogisticRegression(
             C=1.0, 
             max_iter=1000, 
             random_state=self.random_state,
             n_jobs=-1,
-            solver='lbfgs',
-            multi_class='multinomial'
+            solver='liblinear',  # 使用liblinear求解器，支持稀疏矩阵
+            multi_class='ovr'    # 使用one-vs-rest策略
         )
         model.fit(X_train, y_train)
         self.models['LogisticRegression'] = model
@@ -88,6 +148,10 @@ class ModelBuilder:
         """
         构建随机森林模型
         """
+        # 如果是稀疏矩阵，转换为密集矩阵
+        if sparse.issparse(X_train):
+            X_train = X_train.toarray()
+        
         model = RandomForestClassifier(
             n_estimators=100, 
             max_depth=10, 
@@ -102,7 +166,7 @@ class ModelBuilder:
         # 记录特征重要性
         self.feature_importances['RandomForest'] = pd.Series(
             model.feature_importances_, 
-            index=X_train.columns
+            index=range(X_train.shape[1])
         ).sort_values(ascending=False)
         
         return model
@@ -111,6 +175,10 @@ class ModelBuilder:
         """
         构建梯度提升决策树模型
         """
+        # 如果是稀疏矩阵，转换为密集矩阵
+        if sparse.issparse(X_train):
+            X_train = X_train.toarray()
+        
         model = GradientBoostingClassifier(
             n_estimators=100, 
             learning_rate=0.1, 
@@ -123,7 +191,7 @@ class ModelBuilder:
         # 记录特征重要性
         self.feature_importances['GBDT'] = pd.Series(
             model.feature_importances_, 
-            index=X_train.columns
+            index=range(X_train.shape[1])
         ).sort_values(ascending=False)
         
         return model
@@ -132,6 +200,10 @@ class ModelBuilder:
         """
         构建LightGBM模型
         """
+        # 如果是稀疏矩阵，转换为密集矩阵
+        if sparse.issparse(X_train):
+            X_train = X_train.toarray()
+        
         params = {
             'objective': 'multiclass',
             'num_class': len(set(y_train)),
@@ -152,7 +224,7 @@ class ModelBuilder:
         # 记录特征重要性
         self.feature_importances['LightGBM'] = pd.Series(
             model.feature_importance(), 
-            index=X_train.columns
+            index=range(X_train.shape[1])
         ).sort_values(ascending=False)
         
         return model
@@ -161,6 +233,10 @@ class ModelBuilder:
         """
         构建XGBoost模型
         """
+        # 如果是稀疏矩阵，转换为密集矩阵
+        if sparse.issparse(X_train):
+            X_train = X_train.toarray()
+        
         params = {
             'objective': 'multi:softprob',
             'num_class': len(set(y_train)),
@@ -178,7 +254,7 @@ class ModelBuilder:
         # 记录特征重要性
         self.feature_importances['XGBoost'] = pd.Series(
             model.get_score(importance_type='gain'), 
-            index=X_train.columns
+            index=range(X_train.shape[1])
         ).sort_values(ascending=False)
         
         return model
@@ -187,6 +263,10 @@ class ModelBuilder:
         """
         构建深度神经网络模型
         """
+        # 如果是稀疏矩阵，转换为密集矩阵
+        if sparse.issparse(X_train):
+            X_train = X_train.toarray()
+        
         input_dim = X_train.shape[1]
         output_dim = len(set(y_train))
         
@@ -221,10 +301,16 @@ class ModelBuilder:
         构建LSTM模型
         注意：这需要时序数据，可能需要额外的数据处理
         """
+        # 如果是稀疏矩阵，转换为密集矩阵
+        if sparse.issparse(X_train):
+            X_train = X_train.toarray()
+        if sparse.issparse(X_val):
+            X_val = X_val.toarray()
+        
         # 将特征转为3D格式 [samples, time_steps, features]
         # 这里简化处理，将所有特征视为1个时间步
-        X_train_3d = X_train.values.reshape(X_train.shape[0], 1, X_train.shape[1])
-        X_val_3d = X_val.values.reshape(X_val.shape[0], 1, X_val.shape[1])
+        X_train_3d = X_train.reshape(X_train.shape[0], 1, X_train.shape[1])
+        X_val_3d = X_val.reshape(X_val.shape[0], 1, X_val.shape[1])
         
         input_dim = X_train.shape[1]
         output_dim = len(set(y_train))
@@ -248,7 +334,7 @@ class ModelBuilder:
             X_train_3d, y_train, 
             epochs=30, 
             batch_size=32, 
-            validation_data=(X_val_3d, y_val), 
+            validation_data=(X_val_3d, y_val),
             callbacks=[early_stopping],
             verbose=0
         )

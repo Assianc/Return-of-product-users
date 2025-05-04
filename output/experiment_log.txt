@@ -4,3 +4,599 @@
 [2025-04-25 12:21:58] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
 [2025-04-25 12:21:58] 开始数据预处理...
 [2025-04-25 12:21:58] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-25 13:35:12] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-25 13:35:12] 开始数据预处理...
+[2025-04-25 13:35:12] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-25 14:38:07] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-25 14:38:07] 开始数据预处理...
+[2025-04-25 14:38:07] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-26 20:35:58] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-26 20:35:58] 开始数据预处理...
+[2025-04-26 20:35:58] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-27 21:43:28] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-27 21:43:28] 开始数据预处理...
+[2025-04-27 21:43:29] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-28 16:52:36] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 16:52:36] 开始数据预处理...
+[2025-04-28 16:52:36] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-28 16:58:04] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 16:58:04] 开始数据预处理...
+[2025-04-28 16:58:04] 数据预处理失败: Expecting ':' delimiter: line 1 column 2327273 (char 2327272)
+[2025-04-28 17:09:48] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 17:09:48] 开始数据预处理...
+[2025-04-28 17:09:50] 数据预处理失败: Unterminated string starting at: line 1 column 2327269 (char 2327268)
+[2025-04-28 17:10:28] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 17:10:28] 开始数据预处理...
+[2025-04-28 17:10:29] 数据预处理失败: Unterminated string starting at: line 1 column 2327269 (char 2327268)
+[2025-04-28 17:12:16] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 17:12:16] 开始数据预处理...
+[2025-04-28 17:12:22] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 17:12:22] 划分数据集...
+[2025-04-28 17:12:25] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 17:12:25] 开始特征工程...
+[2025-04-28 17:12:31] 特征工程失败: No module named 'networkx'
+[2025-04-28 17:12:42] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 17:12:42] 开始数据预处理...
+[2025-04-28 17:12:47] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 17:12:47] 划分数据集...
+[2025-04-28 17:12:50] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 17:12:50] 开始特征工程...
+[2025-04-28 17:12:55] 特征工程失败: No module named 'networkx'
+[2025-04-28 17:13:37] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 17:13:37] 开始数据预处理...
+[2025-04-28 17:13:45] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 17:13:45] 划分数据集...
+[2025-04-28 17:13:48] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 17:13:48] 开始特征工程...
+[2025-04-28 17:14:51] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 17:14:51] 开始构建模型...
+[2025-04-28 17:14:54] 模型训练与评估失败: Unable to allocate 7.11 GiB for an array with shape (7166, 1065765) and data type bool
+[2025-04-28 17:14:54] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 58, in prepare_data
+    X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\reshape\encoding.py", line 224, in get_dummies
+    result = concat(with_dummies, axis=1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\reshape\concat.py", line 395, in concat
+    return op.get_result()
+           ^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\reshape\concat.py", line 684, in get_result
+    new_data = concatenate_managers(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\internals\concat.py", line 131, in concatenate_managers
+    mgrs = _maybe_reindex_columns_na_proxy(axes, mgrs_indexers, needs_copy)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\internals\concat.py", line 230, in _maybe_reindex_columns_na_proxy
+    mgr = mgr.copy()
+          ^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\internals\managers.py", line 593, in copy
+    res = self.apply("copy", deep=deep)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\internals\managers.py", line 363, in apply
+    applied = getattr(b, f)(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\internals\blocks.py", line 796, in copy
+    values = values.copy()
+             ^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 7.11 GiB for an array with shape (7166, 1065765) and data type bool
+
+[2025-04-28 19:04:31] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:04:31] 开始数据预处理...
+[2025-04-28 19:04:36] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:04:36] 划分数据集...
+[2025-04-28 19:04:39] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:04:39] 开始特征工程...
+[2025-04-28 19:05:32] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:05:32] 开始构建模型...
+[2025-04-28 19:05:35] 模型训练与评估失败: Unable to allocate 56.9 GiB for an array with shape (1065765, 7167) and data type float64
+[2025-04-28 19:05:35] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 53, in prepare_data
+    encoded = np.zeros((len(X), len(unique_values)))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 56.9 GiB for an array with shape (1065765, 7167) and data type float64
+
+[2025-04-28 19:07:58] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:07:58] 开始数据预处理...
+[2025-04-28 19:08:03] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:08:03] 划分数据集...
+[2025-04-28 19:08:06] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:08:06] 开始特征工程...
+[2025-04-28 19:09:00] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:09:00] 开始构建模型...
+[2025-04-28 19:09:02] 模型训练与评估失败: Unable to allocate 56.9 GiB for an array with shape (1065765, 7167) and data type float64
+[2025-04-28 19:09:02] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 52, in prepare_data
+    encoded = np.zeros((len(X), len(unique_values)))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 56.9 GiB for an array with shape (1065765, 7167) and data type float64
+
+[2025-04-28 19:09:45] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:09:45] 开始数据预处理...
+[2025-04-28 19:09:50] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:09:50] 划分数据集...
+[2025-04-28 19:09:53] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:09:53] 开始特征工程...
+[2025-04-28 19:10:47] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:10:47] 开始构建模型...
+[2025-04-28 19:10:49] 模型训练与评估失败: Unable to allocate 56.9 GiB for an array with shape (1065765, 7167) and data type float64
+[2025-04-28 19:10:49] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 52, in prepare_data
+    encoded = np.zeros((len(X), len(unique_values)))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 56.9 GiB for an array with shape (1065765, 7167) and data type float64
+
+[2025-04-28 19:12:59] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:12:59] 开始数据预处理...
+[2025-04-28 19:13:04] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:13:04] 划分数据集...
+[2025-04-28 19:13:06] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:13:06] 开始特征工程...
+[2025-04-28 19:13:59] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:13:59] 开始构建模型...
+[2025-04-28 19:14:02] 模型训练与评估失败: Unable to allocate 28.5 GiB for an array with shape (1065765, 7167) and data type float32
+[2025-04-28 19:14:02] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 52, in prepare_data
+    encoded = np.zeros((len(X), len(unique_values)), dtype=np.float32)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 28.5 GiB for an array with shape (1065765, 7167) and data type float32
+
+[2025-04-28 19:14:43] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:14:43] 开始数据预处理...
+[2025-04-28 19:14:48] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:14:48] 划分数据集...
+[2025-04-28 19:14:50] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:14:50] 开始特征工程...
+[2025-04-28 19:15:43] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:15:43] 开始构建模型...
+[2025-04-28 19:15:47] 模型训练与评估失败: could not convert string to float: 'cb1944869876fa70d20fcae21e14f45d'
+[2025-04-28 19:15:47] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 76, in prepare_data
+    X_num = pd.DataFrame(self.scaler.fit_transform(X_num), columns=num_cols)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\_set_output.py", line 319, in wrapped
+    data_to_wrap = f(self, X, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 918, in fit_transform
+    return self.fit(X, **fit_params).transform(X)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 894, in fit
+    return self.partial_fit(X, y, sample_weight)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 1389, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 930, in partial_fit
+    X = validate_data(
+        ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 2944, in validate_data
+    out = check_array(X, input_name="X", **check_params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 1055, in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\_array_api.py", line 839, in _asarray_with_order
+    array = numpy.asarray(array, order=order, dtype=dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\core\generic.py", line 2153, in __array__
+    arr = np.asarray(values, dtype=dtype)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'cb1944869876fa70d20fcae21e14f45d'
+
+[2025-04-28 19:16:54] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:16:54] 开始数据预处理...
+[2025-04-28 19:16:59] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:16:59] 划分数据集...
+[2025-04-28 19:17:01] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:17:01] 开始特征工程...
+[2025-04-28 19:17:52] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:17:52] 开始构建模型...
+[2025-04-28 19:18:00] 模型训练与评估失败: The DType <class 'numpy.dtypes.DateTime64DType'> could not be promoted by <class 'numpy.dtypes.Float64DType'>. This means that no common DType exists for the given inputs. For example they cannot be stored in a single array unless the dtype is `object`. The full list of DTypes is: (<class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.DateTime64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>)
+[2025-04-28 19:18:00] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 87, in prepare_data
+    X_num = pd.DataFrame(self.scaler.fit_transform(X_num), columns=num_cols)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\_set_output.py", line 319, in wrapped
+    data_to_wrap = f(self, X, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 918, in fit_transform
+    return self.fit(X, **fit_params).transform(X)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 894, in fit
+    return self.partial_fit(X, y, sample_weight)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 1389, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 930, in partial_fit
+    X = validate_data(
+        ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 2944, in validate_data
+    out = check_array(X, input_name="X", **check_params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 931, in check_array
+    dtype_orig = np.result_type(*dtypes_orig)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy.exceptions.DTypePromotionError: The DType <class 'numpy.dtypes.DateTime64DType'> could not be promoted by <class 'numpy.dtypes.Float64DType'>. This means that no common DType exists for the given inputs. For example they cannot be stored in a single array unless the dtype is `object`. The full list of DTypes is: (<class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.DateTime64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int32DType'>, <class 'numpy.dtypes.Int64DType'>, <class 'numpy.dtypes.Int64DType'>)
+
+[2025-04-28 19:18:37] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:18:37] 开始数据预处理...
+[2025-04-28 19:18:41] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:18:41] 划分数据集...
+[2025-04-28 19:18:44] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:18:44] 开始特征工程...
+[2025-04-28 19:19:34] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:19:34] 开始构建模型...
+[2025-04-28 19:19:45] 模型训练与评估失败: object of type 'NoneType' has no len()
+[2025-04-28 19:19:45] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 85, in main
+    log(f"准备训练数据完成，特征数量: {len(feature_names)}")
+                                       ^^^^^^^^^^^^^^^^^^
+TypeError: object of type 'NoneType' has no len()
+
+[2025-04-28 19:22:00] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:22:00] 开始数据预处理...
+[2025-04-28 19:22:04] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:22:04] 划分数据集...
+[2025-04-28 19:22:06] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:22:06] 开始特征工程...
+[2025-04-28 19:22:56] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:22:56] 开始构建模型...
+[2025-04-28 19:23:07] 准备训练数据完成，特征数量: 7263
+[2025-04-28 19:23:07] 训练逻辑回归模型...
+[2025-04-28 19:23:07] 模型训练与评估失败: Unable to allocate 46.1 GiB for an array with shape (852612, 7263) and data type float64
+[2025-04-28 19:23:07] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 90, in main
+    model_builder.build_logistic_regression(X_train, y_train)
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 124, in build_logistic_regression
+    X_train = X_train.toarray()
+              ^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_base.py", line 1367, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 46.1 GiB for an array with shape (852612, 7263) and data type float64
+
+[2025-04-28 19:25:13] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:25:13] 开始数据预处理...
+[2025-04-28 19:25:18] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:25:18] 划分数据集...
+[2025-04-28 19:25:20] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:25:20] 开始特征工程...
+[2025-04-28 19:26:10] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:26:10] 开始构建模型...
+[2025-04-28 19:26:21] 准备训练数据完成，特征数量: 7263
+[2025-04-28 19:26:21] 训练逻辑回归模型...
+[2025-04-28 19:26:21] 模型训练与评估失败: Input X contains NaN.
+LogisticRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+[2025-04-28 19:26:21] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 90, in main
+    model_builder.build_logistic_regression(X_train, y_train)
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 131, in build_logistic_regression
+    model.fit(X_train, y_train)
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 1389, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\linear_model\_logistic.py", line 1222, in fit
+    X, y = validate_data(
+           ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 2961, in validate_data
+    X, y = check_X_y(X, y, **check_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 1370, in check_X_y
+    X = check_array(
+        ^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 1014, in check_array
+    array = _ensure_sparse_format(
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 649, in _ensure_sparse_format
+    _assert_all_finite(
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 120, in _assert_all_finite
+    _assert_all_finite_element_wise(
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 169, in _assert_all_finite_element_wise
+    raise ValueError(msg_err)
+ValueError: Input X contains NaN.
+LogisticRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+
+[2025-04-28 19:55:42] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:55:42] 开始数据预处理...
+[2025-04-28 19:55:46] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:55:46] 划分数据集...
+[2025-04-28 19:55:48] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:55:48] 开始特征工程...
+[2025-04-28 19:56:39] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 19:56:39] 开始构建模型...
+[2025-04-28 19:56:51] 准备训练数据完成，特征数量: 7263
+[2025-04-28 19:56:51] 训练逻辑回归模型...
+[2025-04-28 19:56:51] 模型训练与评估失败: Input X contains NaN.
+LogisticRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+[2025-04-28 19:56:51] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 90, in main
+    model_builder.build_logistic_regression(X_train, y_train)
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 134, in build_logistic_regression
+    model.fit(X_train, y_train)
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 1389, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\linear_model\_logistic.py", line 1222, in fit
+    X, y = validate_data(
+           ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 2961, in validate_data
+    X, y = check_X_y(X, y, **check_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 1370, in check_X_y
+    X = check_array(
+        ^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 1014, in check_array
+    array = _ensure_sparse_format(
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 649, in _ensure_sparse_format
+    _assert_all_finite(
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 120, in _assert_all_finite
+    _assert_all_finite_element_wise(
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 169, in _assert_all_finite_element_wise
+    raise ValueError(msg_err)
+ValueError: Input X contains NaN.
+LogisticRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+
+[2025-04-28 19:59:41] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 19:59:41] 开始数据预处理...
+[2025-04-28 19:59:46] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 19:59:46] 划分数据集...
+[2025-04-28 19:59:48] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 19:59:48] 开始特征工程...
+[2025-04-28 20:00:38] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 20:00:38] 开始构建模型...
+[2025-04-28 20:00:50] 模型训练与评估失败: Unable to allocate 57.7 GiB for an array with shape (1065765, 7263) and data type float64
+[2025-04-28 20:00:50] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 83, in main
+    X_train, X_val, y_train, y_val, feature_names = model_builder.prepare_data(train_features, test_size=args.val_size)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 117, in prepare_data
+    X_dense = X.toarray()
+              ^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_base.py", line 1367, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 57.7 GiB for an array with shape (1065765, 7263) and data type float64
+
+[2025-04-28 20:06:52] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-04-28 20:06:52] 开始数据预处理...
+[2025-04-28 20:06:56] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-04-28 20:06:56] 划分数据集...
+[2025-04-28 20:06:58] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-04-28 20:06:58] 开始特征工程...
+[2025-04-28 20:07:50] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-04-28 20:07:50] 开始构建模型...
+[2025-04-28 20:08:03] 准备训练数据完成，特征数量: 7263
+[2025-04-28 20:08:03] 训练逻辑回归模型...
+[2025-05-01 10:31:24] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 10:31:24] 开始数据预处理...
+[2025-05-01 10:31:31] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 10:31:31] 划分数据集...
+[2025-05-01 10:31:37] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 10:31:37] 开始特征工程...
+[2025-05-01 10:32:37] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 10:32:37] 开始构建模型...
+[2025-05-01 10:32:52] 准备训练数据完成，特征数量: 7263
+[2025-05-01 10:32:52] 训练逻辑回归模型...
+[2025-05-01 10:34:56] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 10:34:56] 开始数据预处理...
+[2025-05-01 10:35:02] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 10:35:02] 划分数据集...
+[2025-05-01 10:35:05] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 10:35:05] 开始特征工程...
+[2025-05-01 10:36:06] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 10:36:06] 开始构建模型...
+[2025-05-01 10:36:23] 准备训练数据完成，特征数量: 7263
+[2025-05-01 10:36:23] 训练逻辑回归模型...
+[2025-05-01 10:40:28] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 10:40:28] 开始数据预处理...
+[2025-05-01 10:40:34] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 10:40:34] 划分数据集...
+[2025-05-01 10:40:36] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 10:40:36] 开始特征工程...
+[2025-05-01 10:41:39] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 10:41:39] 开始构建模型...
+[2025-05-01 10:41:56] 准备训练数据完成，特征数量: 7263
+[2025-05-01 10:41:56] 训练逻辑回归模型...
+[2025-05-01 11:06:21] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:06:21] 开始数据预处理...
+[2025-05-01 11:06:26] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:06:26] 划分数据集...
+[2025-05-01 11:06:28] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:06:28] 开始特征工程...
+[2025-05-01 11:07:22] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:07:22] 开始构建模型...
+[2025-05-01 11:07:35] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:07:35] 训练逻辑回归模型...
+[2025-05-01 11:09:43] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:09:43] 开始数据预处理...
+[2025-05-01 11:09:48] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:09:48] 划分数据集...
+[2025-05-01 11:09:50] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:09:50] 开始特征工程...
+[2025-05-01 11:10:44] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:10:44] 开始构建模型...
+[2025-05-01 11:10:58] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:10:58] 训练逻辑回归模型...
+[2025-05-01 11:21:43] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:21:43] 开始数据预处理...
+[2025-05-01 11:21:49] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:21:49] 划分数据集...
+[2025-05-01 11:21:52] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:21:52] 开始特征工程...
+[2025-05-01 11:23:18] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:23:18] 开始构建模型...
+[2025-05-01 11:23:42] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:23:42] 训练逻辑回归模型...
+[2025-05-01 11:26:47] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:26:47] 开始数据预处理...
+[2025-05-01 11:26:53] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:26:53] 划分数据集...
+[2025-05-01 11:26:56] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:26:56] 开始特征工程...
+[2025-05-01 11:28:14] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:28:14] 开始构建模型...
+[2025-05-01 11:28:32] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:28:32] 训练逻辑回归模型...
+[2025-05-01 11:40:24] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:40:24] 开始数据预处理...
+[2025-05-01 11:40:30] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:40:30] 划分数据集...
+[2025-05-01 11:40:33] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:40:33] 开始特征工程...
+[2025-05-01 11:41:49] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:41:49] 开始构建模型...
+[2025-05-01 11:42:06] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:42:06] 训练逻辑回归模型...
+[2025-05-01 11:42:06] 模型训练与评估失败: Nested use of alive_progress is not yet supported.
+[2025-05-01 11:42:06] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 114, in main
+    with alive_bar(title='训练逻辑回归') as progress_bar:
+  File "D:\python\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\alive_progress\core\progress.py", line 247, in __alive_bar
+    hook_manager = buffered_hook_manager(header if config.enrich_print else '',
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\alive_progress\core\hook_manager.py", line 121, in buffered_hook_manager
+    raise UserWarning('Nested use of alive_progress is not yet supported.')
+UserWarning: Nested use of alive_progress is not yet supported.
+
+[2025-05-01 11:44:38] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['lr', 'rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:44:38] 开始数据预处理...
+[2025-05-01 11:44:44] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:44:44] 划分数据集...
+[2025-05-01 11:44:47] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:44:47] 开始特征工程...
+[2025-05-01 11:46:06] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:46:06] 开始构建模型...
+[2025-05-01 11:46:26] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:46:26] 训练逻辑回归模型...
+[2025-05-01 11:52:04] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, output_dir='output')
+[2025-05-01 11:52:04] 开始数据预处理...
+[2025-05-01 11:52:11] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:52:11] 划分数据集...
+[2025-05-01 11:52:14] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:52:14] 开始特征工程...
+[2025-05-01 11:53:32] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:53:32] 开始构建模型...
+[2025-05-01 11:53:50] 准备训练数据完成，特征数量: 7263
+[2025-05-01 11:53:50] 训练随机森林模型...
+[2025-05-01 11:53:50] 模型训练与评估失败: Unable to allocate 46.1 GiB for an array with shape (852612, 7263) and data type float64
+[2025-05-01 11:53:50] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 107, in main
+    model_builder.build_random_forest(X_train, y_train)
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 153, in build_random_forest
+    X_train = X_train.toarray()
+              ^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_base.py", line 1367, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 46.1 GiB for an array with shape (852612, 7263) and data type float64
+
+[2025-05-01 11:56:02] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=50, max_features=0.3, max_depth=20, use_feature_selection=False, feature_percentile=30, output_dir='output')
+[2025-05-01 11:56:02] 开始数据预处理...
+[2025-05-01 11:56:08] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:56:08] 划分数据集...
+[2025-05-01 11:56:11] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:56:11] 开始特征工程...
+[2025-05-01 11:57:27] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:57:27] 开始构建模型...
+[2025-05-01 11:57:27] 模型训练与评估失败: ModelBuilder.__init__() got an unexpected keyword argument 'max_features'
+[2025-05-01 11:57:27] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 89, in main
+    model_builder = ModelBuilder(random_state=args.random_state,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ModelBuilder.__init__() got an unexpected keyword argument 'max_features'
+
+[2025-05-01 11:57:50] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=30, max_features=0.2, max_depth=15, use_feature_selection=True, feature_percentile=30, output_dir='output')
+[2025-05-01 11:57:50] 开始数据预处理...
+[2025-05-01 11:57:56] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 11:57:56] 划分数据集...
+[2025-05-01 11:57:59] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 11:57:59] 开始特征工程...
+[2025-05-01 11:59:15] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 11:59:15] 开始构建模型...
+[2025-05-01 11:59:15] 模型训练与评估失败: ModelBuilder.__init__() got an unexpected keyword argument 'max_features'
+[2025-05-01 11:59:15] Traceback (most recent call last):
+  File "D:\Pycharm Projact\ReturnOfProductUsers\main.py", line 89, in main
+    model_builder = ModelBuilder(random_state=args.random_state,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ModelBuilder.__init__() got an unexpected keyword argument 'max_features'
+
+[2025-05-01 12:01:40] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=50, max_features=0.3, max_depth=20, use_feature_selection=False, feature_percentile=30, output_dir='output')
+[2025-05-01 12:01:40] 开始数据预处理...
+[2025-05-01 12:01:46] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 12:01:46] 划分数据集...
+[2025-05-01 12:01:49] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 12:01:49] 开始特征工程...
+[2025-05-01 12:03:05] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 12:03:05] 开始构建模型...
+[2025-05-01 12:03:22] 准备训练数据完成，特征数量: 7263
+[2025-05-01 12:03:23] 训练随机森林模型...
+[2025-05-01 12:03:23] 随机森林模型训练失败: ModelBuilder.build_random_forest() got an unexpected keyword argument 'n_estimators'
+[2025-05-01 12:03:23] 训练GBDT模型...
+[2025-05-01 12:03:23] 模型训练与评估失败: Unable to allocate 46.1 GiB for an array with shape (852612, 7263) and data type float64
+[2025-05-01 12:03:23] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 168, in main
+    model_builder.build_gbdt(X_train, y_train)
+  File "d:\Pycharm Projact\ReturnOfProductUsers\model_building.py", line 180, in build_gbdt
+    X_train = X_train.toarray()
+              ^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_compressed.py", line 1170, in toarray
+    out = self._process_toarray_args(order, out)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\scipy\sparse\_base.py", line 1367, in _process_toarray_args
+    return np.zeros(self.shape, dtype=self.dtype, order=order)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 46.1 GiB for an array with shape (852612, 7263) and data type float64
+
+[2025-05-01 12:06:12] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=50, max_features=0.3, max_depth=20, use_feature_selection=False, feature_percentile=30, output_dir='output')
+[2025-05-01 12:06:12] 开始数据预处理...
+[2025-05-01 12:06:17] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 12:06:17] 划分数据集...
+[2025-05-01 12:06:19] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 12:06:19] 开始特征工程...
+[2025-05-01 12:07:12] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 12:07:12] 开始构建模型...
+[2025-05-01 12:07:25] 准备训练数据完成，特征数量: 7263
+[2025-05-01 12:18:21] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=50, max_features=0.3, max_depth=20, use_feature_selection=False, feature_percentile=30, output_dir='output')
+[2025-05-01 12:18:21] 开始数据预处理...
+[2025-05-01 12:18:26] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-01 12:18:26] 划分数据集...
+[2025-05-01 12:18:28] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-01 12:18:28] 开始特征工程...
+[2025-05-01 12:19:22] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-01 12:19:22] 开始构建模型...
+[2025-05-01 12:19:34] 准备训练数据完成，特征数量: 7263
