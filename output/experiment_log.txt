@@ -600,3 +600,177 @@ numpy._core._exceptions._ArrayMemoryError: Unable to allocate 46.1 GiB for an ar
 [2025-05-01 12:19:22] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
 [2025-05-01 12:19:22] 开始构建模型...
 [2025-05-01 12:19:34] 准备训练数据完成，特征数量: 7263
+[2025-05-08 19:01:13] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=50, max_features=0.3, max_depth=20, use_feature_selection=False, feature_percentile=30, output_dir='output')
+[2025-05-08 19:01:13] 开始数据预处理...
+[2025-05-08 19:01:19] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-08 19:01:19] 划分数据集...
+[2025-05-08 19:01:21] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-08 19:01:21] 开始特征工程...
+[2025-05-08 19:02:14] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, models=['rf', 'gbdt', 'lgb', 'xgb', 'dnn', 'lstm'], top_k=10, random_state=42, n_estimators=50, max_features=0.3, max_depth=20, use_feature_selection=False, feature_percentile=30, output_dir='output')
+[2025-05-08 19:02:14] 开始数据预处理...
+[2025-05-08 19:02:20] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-08 19:02:20] 划分数据集...
+[2025-05-08 19:02:23] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-08 19:02:23] 开始特征工程...
+[2025-05-08 19:02:49] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-08 19:02:49] 开始构建模型...
+[2025-05-08 19:03:35] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-08 19:03:35] 开始构建模型...
+[2025-05-17 11:50:04] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, limit_features=False, feature_count=100, use_bayesian_opt=False, bayesian_iter=20, epochs=50, random_state=42, output_dir='output')
+[2025-05-17 11:50:04] 开始数据预处理...
+[2025-05-17 11:50:10] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-17 11:50:10] 划分数据集...
+[2025-05-17 11:50:13] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-17 11:50:13] 开始特征工程...
+[2025-05-17 11:51:14] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-17 11:51:14] 准备模型训练数据...
+[2025-05-17 11:51:18] 数据准备失败: could not convert string to float: '95955edfedfcf40e4fc4562f31b7dd87'
+[2025-05-17 11:51:18] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 432, in main
+    X_train_scaled = scaler.fit_transform(X_train)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\_set_output.py", line 319, in wrapped
+    data_to_wrap = f(self, X, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 918, in fit_transform
+    return self.fit(X, **fit_params).transform(X)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 894, in fit
+    return self.partial_fit(X, y, sample_weight)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\base.py", line 1389, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 930, in partial_fit
+    X = validate_data(
+        ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 2944, in validate_data
+    out = check_array(X, input_name="X", **check_params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\validation.py", line 1055, in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\sklearn\utils\_array_api.py", line 839, in _asarray_with_order
+    array = numpy.asarray(array, order=order, dtype=dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: '95955edfedfcf40e4fc4562f31b7dd87'
+
+[2025-05-17 11:54:14] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, limit_features=False, feature_count=100, use_bayesian_opt=False, bayesian_iter=20, epochs=50, random_state=42, model_type='classification', force_binary=False, output_dir='output')
+[2025-05-17 11:54:14] 开始数据预处理...
+[2025-05-17 11:54:18] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-17 11:54:18] 划分数据集...
+[2025-05-17 11:54:21] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-17 11:54:21] 开始特征工程...
+[2025-05-17 11:55:18] 特征工程完成，训练集特征数量: 60, 测试集特征数量: 60
+[2025-05-17 11:55:18] 准备模型训练数据...
+[2025-05-17 11:55:18] 检查特征类型...
+[2025-05-17 11:55:18] 发现非数值特征: user_id, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: user_id_voter, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: cate_id, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: cate_level1_id, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: brand_id, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: shop_id, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: user_id_inviter_graph, 类型: object
+[2025-05-17 11:55:18] 发现非数值特征: user_id_voter_graph, 类型: object
+[2025-05-17 11:55:18] 需要处理 8 个非数值特征列
+[2025-05-17 11:55:18] 对列 'user_id' 进行标签编码
+[2025-05-17 11:55:18] 对列 'user_id_voter' 进行标签编码
+[2025-05-17 11:55:18] 对列 'cate_id' 进行标签编码
+[2025-05-17 11:55:19] 对列 'cate_level1_id' 进行标签编码
+[2025-05-17 11:55:19] 对列 'brand_id' 进行标签编码
+[2025-05-17 11:55:20] 对列 'shop_id' 进行标签编码
+[2025-05-17 11:55:20] 对列 'user_id_inviter_graph' 进行标签编码
+[2025-05-17 11:55:21] 对列 'user_id_voter_graph' 进行标签编码
+[2025-05-17 11:55:21] 标签编码器已保存到: output\models\label_encoders.pkl
+[2025-05-17 11:55:21] 分离特征和标签...
+[2025-05-17 11:55:21] 将voter_id转换为数值类型...
+[2025-05-17 11:55:23] 转换为分类问题，类别数量: 96072
+[2025-05-17 11:55:23] 类别数量过多，使用整数标签
+[2025-05-17 11:55:25] 数据准备完成，训练集大小: (852612, 56), 验证集大小: (213153, 56), 测试集大小: (155824, 56)
+[2025-05-17 11:55:25] 开始贝叶斯优化超参数...
+[2025-05-17 11:55:25] 跳过贝叶斯优化，使用默认超参数
+[2025-05-17 11:55:25] 开始训练CNN+LSTM模型...
+[2025-05-17 11:55:27] 序列数据准备完成，形状: (852608, 5, 56)
+[2025-05-17 11:55:27] 类别数量过多(72513)，将作为回归问题处理
+[2025-05-17 11:55:27] 开始训练模型...
+[2025-05-17 13:39:15] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_lstm=False, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 13:39:15] 开始数据预处理...
+[2025-05-17 13:39:20] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-17 13:39:20] 划分数据集...
+[2025-05-17 13:39:22] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-17 13:39:22] 构建社交图谱...
+[2025-05-17 13:39:22] 图构建失败: name 'build_graph_from_interactions' is not defined
+[2025-05-17 13:39:22] Traceback (most recent call last):
+  File "d:\Pycharm Projact\ReturnOfProductUsers\main.py", line 576, in main
+    G, node_mapping, node_features = build_graph_from_interactions(train_df, user_info_df, item_info_df)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'build_graph_from_interactions' is not defined
+
+[2025-05-17 13:55:23] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_lstm=False, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 13:55:23] 开始数据预处理...
+[2025-05-17 13:55:28] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-17 13:55:28] 划分数据集...
+[2025-05-17 13:55:31] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-17 13:55:31] 构建社交图谱...
+[2025-05-17 15:30:18] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 15:30:18] 开始数据预处理...
+[2025-05-17 15:30:21] 数据集规模降低: 从 602679 到 30134 记录 (1/20)
+[2025-05-17 15:30:21] 减少后的用户数量: 20539, 物品数量: 25364
+[2025-05-17 15:30:21] 数据预处理完成，商品分享记录数量: 30134, 用户数量: 20539, 商品数量: 25364
+[2025-05-17 15:30:21] 划分数据集...
+[2025-05-17 15:30:21] 数据集划分完成，训练集大小: 24107, 测试集大小: 6027
+[2025-05-17 15:30:21] 构建社交图谱...
+[2025-05-17 15:30:50] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 15:30:50] 开始数据预处理...
+[2025-05-17 15:30:52] 数据集规模降低: 从 602679 到 30134 记录 (1/20)
+[2025-05-17 15:30:52] 减少后的用户数量: 20539, 物品数量: 25364
+[2025-05-17 15:30:52] 数据预处理完成，商品分享记录数量: 30134, 用户数量: 20539, 商品数量: 25364
+[2025-05-17 15:30:52] 划分数据集...
+[2025-05-17 15:30:52] 数据集划分完成，训练集大小: 24107, 测试集大小: 6027
+[2025-05-17 15:30:52] 构建社交图谱...
+[2025-05-17 15:32:00] 图构建完成，节点数: 38607, 边数: 45509
+[2025-05-17 15:32:00] 准备链接预测数据...
+[2025-05-17 15:38:20] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 15:38:20] 开始数据预处理...
+[2025-05-17 15:38:23] 数据集规模降低: 从 602679 到 30134 记录 (1/20)
+[2025-05-17 15:38:23] 减少后的用户数量: 20539, 物品数量: 25364
+[2025-05-17 15:38:23] 数据预处理完成，商品分享记录数量: 30134, 用户数量: 20539, 商品数量: 25364
+[2025-05-17 15:38:23] 划分数据集...
+[2025-05-17 15:38:23] 数据集划分完成，训练集大小: 24107, 测试集大小: 6027
+[2025-05-17 15:38:23] 构建社交图谱...
+[2025-05-17 15:39:41] 图构建完成，节点数: 38607, 边数: 45509
+[2025-05-17 15:39:41] 准备链接预测数据...
+[2025-05-17 15:44:00] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 15:44:00] 开始数据预处理...
+[2025-05-17 15:44:02] 数据集规模降低: 从 602679 到 30134 记录 (1/20)
+[2025-05-17 15:44:03] 减少后的用户数量: 20539, 物品数量: 25364
+[2025-05-17 15:44:03] 数据预处理完成，商品分享记录数量: 30134, 用户数量: 20539, 商品数量: 25364
+[2025-05-17 15:44:03] 划分数据集...
+[2025-05-17 15:44:03] 数据集划分完成，训练集大小: 24107, 测试集大小: 6027
+[2025-05-17 15:44:03] 构建社交图谱...
+[2025-05-17 15:45:14] 图构建完成，节点数: 38607, 边数: 45509
+[2025-05-17 15:45:14] 准备链接预测数据...
+[2025-05-17 15:49:51] 链接预测数据准备完成，训练样本: 115569, 验证样本: 28901
+[2025-05-17 15:49:51] 训练GNN模型...
+[2025-05-17 15:49:51] 使用减少的训练轮数: 50 (原计划: 100)
+[2025-05-17 15:49:52] Epoch 5/50, Loss: 0.6541, Val Loss: 0.6489, Val Acc: 0.6663
+[2025-05-17 15:49:53] Epoch 10/50, Loss: 0.6387, Val Loss: 0.6386, Val Acc: 0.6663
+[2025-05-17 15:49:54] 早停: 5 个epoch内验证损失没有改善
+[2025-05-17 15:49:54] GNN模型训练完成
+[2025-05-17 15:49:54] 训练XGBoost模型...
+[2025-05-17 15:49:54] 混合模型训练完成
+[2025-05-17 15:49:54] 总候选用户数量: 20539
+[2025-05-17 15:49:54] 从测试集中随机抽取 100 条记录进行验证
+[2025-05-17 15:50:18] 预测完成，生成了 100 个预测结果
+[2025-05-17 15:50:18] 计算MRR (Mean Reciprocal Rank)...
+[2025-05-17 15:50:18] 测试样本上的MRR: 0.0000
+[2025-05-17 15:50:18] 实验完成，总运行时间: 377.88秒 (6.30分钟)
+[2025-05-17 16:03:44] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-17 16:03:44] 开始数据预处理...
+[2025-05-17 16:03:46] 使用完整数据集: 602679 条记录
+[2025-05-17 16:03:49] 数据预处理完成，商品分享记录数量: 602679, 用户数量: 115849, 商品数量: 438164
+[2025-05-17 16:03:49] 划分数据集...
+[2025-05-17 16:03:52] 数据集划分完成，训练集大小: 482143, 测试集大小: 120536
+[2025-05-17 16:03:52] 构建社交图谱...
+[2025-05-17 17:47:21] 图构建完成，节点数: 365505, 边数: 791734
+[2025-05-17 17:47:21] 准备链接预测数据...

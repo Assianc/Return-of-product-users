@@ -197,9 +197,18 @@ def create_graph_features(item_share_df):
     
     return graph_features
 
-def build_features(train_df, user_info_df, item_info_df):
+def build_features(train_df, user_info_df, item_info_df, feature_limit=None):
     """
     构建所有特征
+    
+    参数:
+    train_df: 训练数据
+    user_info_df: 用户信息数据
+    item_info_df: 商品信息数据
+    feature_limit: 特征数量限制，如果不为None，则只保留指定数量的特征
+    
+    返回:
+    包含所有特征的DataFrame
     """
     print("创建用户特征...")
     user_features = create_user_features(train_df, user_info_df)
@@ -213,8 +222,20 @@ def build_features(train_df, user_info_df, item_info_df):
     print("创建时间特征...")
     time_features = create_time_features(train_df)
     
-    print("创建图结构特征...")
-    graph_features = create_graph_features(train_df)
+    # 如果内存受限，可以选择跳过图结构特征
+    if feature_limit is not None and feature_limit < 50:  # 假设较小的feature_limit表示内存严重受限
+        print("由于特征数量限制，跳过图结构特征计算...")
+        graph_features = None
+    else:
+        print("创建图结构特征...")
+        try:
+            graph_features = create_graph_features(train_df)
+        except MemoryError:
+            print("创建图结构特征时内存不足，跳过此步骤...")
+            graph_features = None
+        except Exception as e:
+            print(f"创建图结构特征时出错: {str(e)}，跳过此步骤...")
+            graph_features = None
     
     # 整合所有特征
     print("整合所有特征...")
@@ -247,24 +268,27 @@ def build_features(train_df, user_info_df, item_info_df):
         how='left'
     )
     
-    # 合并图结构特征
-    features = pd.merge(
-        features, 
-        graph_features.reset_index(),
-        left_on='inviter_id', 
-        right_on='user_id', 
-        how='left',
-        suffixes=('', '_inviter_graph')
-    )
-    
-    features = pd.merge(
-        features, 
-        graph_features.reset_index(),
-        left_on='voter_id', 
-        right_on='user_id', 
-        how='left',
-        suffixes=('', '_voter_graph')
-    )
+    # 合并图结构特征 (如果有)
+    if graph_features is not None:
+        # 合并作为邀请者的图特征
+        features = pd.merge(
+            features,
+            graph_features.reset_index(),
+            left_on='inviter_id',
+            right_on='user_id',
+            how='left',
+            suffixes=('', '_inviter_graph')
+        )
+        
+        # 合并作为被邀请者的图特征
+        features = pd.merge(
+            features,
+            graph_features.reset_index(),
+            left_on='voter_id',
+            right_on='user_id',
+            how='left',
+            suffixes=('', '_voter_graph')
+        )
     
     # 提取时间特征并合并
     time_cols = ['hour', 'day', 'month', 'dayofweek', 'is_weekend', 'time_period_encoded']
@@ -275,7 +299,30 @@ def build_features(train_df, user_info_df, item_info_df):
         how='left'
     )
     
-    print(f"最终特征数量: {features.shape[1]}")
+    # 处理缺失值
+    features.fillna(0, inplace=True)
+    
+    # 如果指定了特征数量限制，则按重要性选择特征
+    if feature_limit is not None and features.shape[1] > feature_limit:
+        print(f"特征总数 {features.shape[1]} 超过限制 {feature_limit}，执行特征选择...")
+        
+        # 保留必要的ID列和目标变量
+        essential_columns = ['inviter_id', 'voter_id', 'item_id', 'timestamp']
+        
+        # 计算每个特征的方差，方差高的特征可能包含更多信息
+        feature_cols = [col for col in features.columns if col not in essential_columns]
+        
+        # 计算特征方差
+        feature_variance = features[feature_cols].var()
+        
+        # 选择方差最高的特征
+        selected_features = feature_variance.nlargest(feature_limit - len(essential_columns)).index.tolist()
+        
+        # 添加必要的列
+        selected_columns = essential_columns + selected_features
+        
+        print(f"选择了 {len(selected_columns)} 个特征")
+        return features[selected_columns]
     
     return features
 
