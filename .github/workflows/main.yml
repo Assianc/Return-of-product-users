@@ -22,6 +22,10 @@ jobs:
         pip install pytest pytest-cov
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
+    - name: Run main script
+      run: |
+        python main.py
+    
     - name: Run tests
       run: |
         pytest tests/ --cov=./ --cov-report=xml
