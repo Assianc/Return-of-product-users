@@ -22,21 +22,18 @@ jobs:
         pip install setuptools wheel
         pip install pytest pytest-cov
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    
-    - name: Create tests directory
+
+    - name: Run main
       run: |
-        mkdir -p tests
+        python test.py
+#        python main.py
+
     
-    - name: Run main script and save output
+    - name: commit
       run: |
-        python main.py > tests/output.txt 2>&1
-    
-    - name: Run tests
-      run: |
-        pytest tests/ --cov=./ --cov-report=xml
-      continue-on-error: true
-    
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        git pull origin main
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git add .
+        git commit -m "update"
+        git push
