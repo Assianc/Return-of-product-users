@@ -457,7 +457,7 @@ class HybridModel:
             inviter_id: 邀请者ID
             item_id: 物品ID
             candidates: 候选voter ID列表
-            timestamp: 时间戳
+            timestamp: 时间戳，可选
         
         返回:
             推荐的top-5 voter ID列表
@@ -577,7 +577,7 @@ def build_graph_from_interactions(df, user_info_df, item_info_df):
     
     # 将用户(inviter和voter)和物品添加为节点
     inviters = set(df['inviter_id'].unique())
-    voters = set(df['voter_id'].unique())
+    voters = set(df['voter_id'].unique()) if 'voter_id' in df.columns else set()
     items = set(df['item_id'].unique())
     
     # 所有用户
@@ -600,7 +600,8 @@ def build_graph_from_interactions(df, user_info_df, item_info_df):
     edge_timestamps = []
     
     # 按时间戳排序，确保时间顺序
-    df = df.sort_values('timestamp')
+    if 'timestamp' in df.columns:
+        df = df.sort_values('timestamp')
     
     # 添加交互边
     print("添加交互边...")
@@ -608,16 +609,31 @@ def build_graph_from_interactions(df, user_info_df, item_info_df):
         for _, row in df.iterrows():
             inviter = f"u_{row['inviter_id']}"
             item = f"i_{row['item_id']}"
-            voter = f"u_{row['voter_id']}"
-            timestamp = pd.to_datetime(row['timestamp']).timestamp()
             
-            # 添加边
+            # 添加inviter->item边
             edges.append((inviter, item))
-            edges.append((item, voter))
             
-            # 边的时间戳
-            edge_timestamps.append(timestamp)
-            edge_timestamps.append(timestamp)
+            # 如果有voter_id，添加item->voter边
+            if 'voter_id' in df.columns:
+                voter = f"u_{row['voter_id']}"
+                edges.append((item, voter))
+                
+                # 边的时间戳
+                if 'timestamp' in df.columns:
+                    timestamp = pd.to_datetime(row['timestamp']).timestamp()
+                    edge_timestamps.append(timestamp)
+                    edge_timestamps.append(timestamp)
+                else:
+                    # 如果没有时间戳，使用默认值
+                    edge_timestamps.append(0)
+                    edge_timestamps.append(0)
+            else:
+                # 如果没有voter_id，只添加一条边的时间戳
+                if 'timestamp' in df.columns:
+                    timestamp = pd.to_datetime(row['timestamp']).timestamp()
+                    edge_timestamps.append(timestamp)
+                else:
+                    edge_timestamps.append(0)
             
             pbar.update(1)
     
@@ -1030,39 +1046,65 @@ def main(args):
     # 数据预处理
     log("开始数据预处理...")
     try:
-        print("正在加载和预处理数据...")
-        item_share_df, user_info_df, item_info_df = preprocess_data()
+        print("正在加载训练集和测试集数据...")
         
-        # 使用完整数据集进行训练
-        original_size = len(item_share_df)
-        log(f"使用完整数据集: {original_size} 条记录")
+        # 加载预定义的训练集和测试集
+        train_file = 'train/preliminary/item_share_train_info.json'
+        test_file = 'test/preliminary/item_share_preliminary_test_info.json'
+        user_info_file = 'train/preliminary/user_info.json'
+        item_info_file = 'train/preliminary/item_info.json'
+        
+        log(f"加载训练集文件: {train_file}")
+        train_df = pd.read_json(train_file)
+        
+        log(f"加载测试集文件: {test_file}")
+        test_df = pd.read_json(test_file)
+        
+        log(f"加载用户信息文件: {user_info_file}")
+        user_info_df = pd.read_json(user_info_file)
+        
+        log(f"加载物品信息文件: {item_info_file}")
+        item_info_df = pd.read_json(item_info_file)
+        
+        # 如果使用采样，减少数据量以加快处理速度
+        if args.use_sampling:
+            original_train_size = len(train_df)
+            log(f"对训练数据进行采样，采样率: {args.sampling_rate}, 原始数据量: {original_train_size}")
+            train_df = train_df.sample(frac=args.sampling_rate, random_state=args.random_state)
+            log(f"采样后的训练数据量: {len(train_df)}")
+            
+            # 由于采样后数据减少，获取当前数据涉及的用户和物品
+            sample_users = set(train_df['inviter_id'].unique()).union(set(train_df['voter_id'].unique()))
+            sample_items = set(train_df['item_id'].unique())
+            
+            # 只保留相关的用户和物品信息
+            log(f"过滤用户信息，原始用户数量: {len(user_info_df)}")
+            user_info_df = user_info_df[user_info_df['user_id'].isin(sample_users)]
+            log(f"过滤后的用户数量: {len(user_info_df)}")
+            
+            log(f"过滤物品信息，原始物品数量: {len(item_info_df)}")
+            item_info_df = item_info_df[item_info_df['item_id'].isin(sample_items)]
+            log(f"过滤后的物品数量: {len(item_info_df)}")
+        
+        # 对数据进行必要的预处理
+        log("对数据进行预处理...")
+        train_df, user_info_df, item_info_df = preprocess_data(train_df, user_info_df, item_info_df)
         
         # 保存预处理后的数据
         processed_data_dir = os.path.join(args.output_dir, 'processed_data')
         print("保存预处理后的数据...")
         user_info_df.to_csv(os.path.join(processed_data_dir, 'user_info.csv'), index=False)
         item_info_df.to_csv(os.path.join(processed_data_dir, 'item_info.csv'), index=False)
-        item_share_df.to_csv(os.path.join(processed_data_dir, 'item_share.csv'), index=False)
+        train_df.to_csv(os.path.join(processed_data_dir, 'train.csv'), index=False)
+        test_df.to_csv(os.path.join(processed_data_dir, 'test.csv'), index=False)
         
-        log(f"数据预处理完成，商品分享记录数量: {len(item_share_df)}, 用户数量: {len(user_info_df)}, 商品数量: {len(item_info_df)}")
+        log(f"数据预处理完成，商品分享训练记录数量: {len(train_df)}, 测试记录数量: {len(test_df)}, 用户数量: {len(user_info_df)}, 商品数量: {len(item_info_df)}")
     except Exception as e:
         log(f"数据预处理失败: {str(e)}")
         return
     
-    # 划分训练集和测试集
-    log("划分数据集...")
-    try:
-        print("正在划分训练集和测试集...")
-        train_df, test_df = split_data(item_share_df, test_size=args.test_size)
-        
-        # 保存划分后的数据
-        train_df.to_csv(os.path.join(processed_data_dir, 'train.csv'), index=False)
-        test_df.to_csv(os.path.join(processed_data_dir, 'test.csv'), index=False)
-        
-        log(f"数据集划分完成，训练集大小: {len(train_df)}, 测试集大小: {len(test_df)}")
-    except Exception as e:
-        log(f"数据集划分失败: {str(e)}")
-        return
+    # 不再需要划分训练集和测试集，使用预定义的
+    log("使用预定义的训练集和测试集...")
     
     # 构建图
     log("构建社交图谱...")
@@ -1097,11 +1139,11 @@ def main(args):
     # 准备链接预测数据
     log("准备链接预测数据...")
     try:
-        # 划分训练集用于验证
-        train_df, val_df = train_test_split(train_df, test_size=args.val_size, random_state=args.random_state)
+        # 从训练集中划分出一部分用于验证
+        train_df_subset, val_df = train_test_split(train_df, test_size=args.val_size, random_state=args.random_state)
         
         # 准备训练和验证数据
-        train_data, val_data = prepare_link_prediction_data(G, node_mapping, train_df, val_df)
+        train_data, val_data = prepare_link_prediction_data(G, node_mapping, train_df_subset, val_df)
         
         log(f"链接预测数据准备完成，训练样本: {len(train_data['labels'])}, 验证样本: {len(val_data['labels'])}")
     except Exception as e:
@@ -1255,29 +1297,25 @@ def main(args):
         all_users = list(user_info_df['user_id'].values)
         log(f"总候选用户数量: {len(all_users)}")
         
-        # 为了全面评估，从测试集中随机采样更多样本
-        sample_size = min(500, len(test_df))  # 增加到500个样本
-        test_sample = test_df.sample(n=sample_size, random_state=args.random_state)
-        log(f"从测试集中随机抽取 {sample_size} 条记录进行验证")
-        
         # 预测结果列表
         predictions = []
         
         # 对测试集的每个样本进行预测
         print("开始生成预测...")
-        with alive_bar(len(test_sample), title='生成预测') as bar:
-            for idx, row in test_sample.iterrows():
+        with alive_bar(len(test_df), title='生成预测') as bar:
+            for idx, row in test_df.iterrows():
                 inviter_id = row['inviter_id']
                 item_id = row['item_id']
-                timestamp = row['timestamp']
+                triple_id = row['triple_id']
                 
                 # 推荐top-5 voter
                 try:
-                    recommended_voters = hybrid_model.predict(inviter_id, item_id, all_users, timestamp)
+                    # 使用所有用户作为候选人
+                    recommended_voters = hybrid_model.predict(inviter_id, item_id, all_users)
                     
                     # 添加到预测结果
                     predictions.append({
-                        'triple_id': str(idx),
+                        'triple_id': str(triple_id),
                         'candidate_voter_list': [str(voter) for voter in recommended_voters[:5]]
                     })
                     
@@ -1285,11 +1323,11 @@ def main(args):
                     bar()
                 except Exception as pred_error:
                     # 如果预测失败，随机推荐
-                    log(f"预测ID {idx} 失败: {str(pred_error)}, 使用随机推荐")
+                    log(f"预测ID {triple_id} 失败: {str(pred_error)}, 使用随机推荐")
                     import random
                     random_voters = random.sample(all_users, min(5, len(all_users)))
                     predictions.append({
-                        'triple_id': str(idx),
+                        'triple_id': str(triple_id),
                         'candidate_voter_list': [str(voter) for voter in random_voters]
                     })
                     
@@ -1303,30 +1341,7 @@ def main(args):
         
         log(f"预测完成，生成了 {len(predictions)} 个预测结果")
         
-        # 如果测试样本中包含真实的voter_id，计算MRR
-        if 'voter_id' in test_sample.columns:
-            log("计算MRR (Mean Reciprocal Rank)...")
-            reciprocal_ranks = []
-            
-            for idx, pred in enumerate(predictions):
-                true_voter = str(test_sample.iloc[idx]['voter_id'])
-                candidate_list = pred['candidate_voter_list']
-                
-                # 计算排名的倒数
-                if true_voter in candidate_list:
-                    rank = candidate_list.index(true_voter) + 1
-                    reciprocal_ranks.append(1.0 / rank)
-                else:
-                    reciprocal_ranks.append(0)
-            
-            # 计算MRR
-            mrr = sum(reciprocal_ranks) / len(reciprocal_ranks)
-            log(f"测试样本上的MRR: {mrr:.4f}")
-            
-            # 保存评估结果
-            with open(os.path.join(args.output_dir, 'results', 'evaluation.txt'), 'w') as f:
-                f.write(f"MRR: {mrr}\n")
-                f.write(f"Sample size: {sample_size}\n")
+        # 测试集没有真实的voter_id，所以不计算MRR
         
     except Exception as e:
         log(f"预测失败: {str(e)}")

@@ -26,9 +26,8 @@ jobs:
     - name: Run main
       run: |
         python test.py
-        python main.py
+#        python main.py
 
-    
     - name: commit
       run: |
         git pull

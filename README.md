@@ -34,16 +34,32 @@ pip install -r requirements.txt
 
 ## 使用方法
 
+### 基本用法
+
 运行主程序：
 
 ```bash
 python main.py --gnn_type sage --use_xgboost --output_dir output
 ```
 
+### 使用数据采样加速开发和调试
+
+对于大型数据集，可以使用采样功能加快处理速度：
+
+```bash
+# 使用5%的数据进行采样
+python main.py --use_sampling --sampling_rate 0.05 --output_dir output
+
+# 使用10%的数据并启用XGBoost
+python main.py --use_sampling --sampling_rate 0.1 --use_xgboost --output_dir output
+```
+
 ### 参数说明
 
 - `--test_size`: 测试集比例，默认0.2
 - `--val_size`: 验证集比例，默认0.2
+- `--use_sampling`: 是否对训练数据进行采样，用于加速开发和调试
+- `--sampling_rate`: 数据采样比例，默认0.3，表示使用30%的数据
 - `--gnn_type`: GNN类型，可选'gcn', 'sage', 'gat'，默认'sage'
 - `--hidden_channels`: GNN隐藏层维度，默认128
 - `--embedding_dim`: 节点嵌入维度，默认64
@@ -62,6 +78,69 @@ python main.py --gnn_type sage --use_xgboost --output_dir output
 - `processed_data/`: 保存预处理后的数据
 - `experiment_log.txt`: 实验日志
 
+## 数据格式说明
+
+### 训练数据
+
+训练数据包含三个主要文件：
+
+1. **item_share_train_info.json**: 用户动态商品分享数据
+   ```json
+   {
+     "inviter_id": "用户ID",
+     "item_id": "商品ID",
+     "voter_id": "被邀请用户ID",
+     "timestamp": "时间戳"
+   }
+   ```
+
+2. **user_info.json**: 用户信息数据
+   ```json
+   {
+     "user_id": "用户ID",
+     "user_gender": "用户性别",
+     "user_age": "用户年龄段",
+     "user_level": "用户等级"
+   }
+   ```
+
+3. **item_info.json**: 商品信息数据
+   ```json
+   {
+     "item_id": "商品ID",
+     "cate_id": "商品类目ID",
+     "cate_level1_id": "商品一级类目ID",
+     "brand_id": "品牌ID",
+     "shop_id": "店铺ID"
+   }
+   ```
+
+### 测试数据
+
+测试数据格式：**item_share_preliminary_test_info.json**
+```json
+{
+  "triple_id": "测试样本ID",
+  "inviter_id": "用户ID",
+  "item_id": "商品ID"
+}
+```
+
+注意：测试数据中没有voter_id字段，需要由模型预测推荐的voter。
+
+### 提交格式
+
+预测结果保存为JSON格式：
+```json
+[
+  {
+    "triple_id": "测试样本ID",
+    "candidate_voter_list": ["推荐用户ID1", "推荐用户ID2", "推荐用户ID3", "推荐用户ID4", "推荐用户ID5"]
+  },
+  "..."
+]
+```
+
 ## 适用场景
 
 本项目特别适合以下场景：
@@ -79,6 +158,7 @@ python main.py --gnn_type sage --use_xgboost --output_dir output
 - 内存占用优化
 - 完善的进度监控和错误处理
 - 灵活的模型参数配置
+- 数据采样功能，加速开发和调试过程
 
 ## 项目结构
 
@@ -95,17 +175,13 @@ python main.py --gnn_type sage --use_xgboost --output_dir output
 │       ├── user_info.json              # 用户信息数据
 │       └── item_info.json              # 商品信息数据
 ├── test/                    # 测试数据目录
+│   └── preliminary/         # 初赛测试数据
+│       └── item_share_preliminary_test_info.json  # 测试数据
 └── output/                  # 输出目录
     ├── models/              # 模型保存目录
     ├── results/             # 结果保存目录
     └── processed_data/      # 处理后的数据保存目录
 ```
-
-## 数据说明
-
-- **item_share_train_info.json**: 用户动态商品分享数据，包含邀请用户id、分享商品id、被邀请用户id、时间戳等信息
-- **user_info.json**: 用户信息数据，包含用户id、性别、年龄段、用户等级等信息
-- **item_info.json**: 商品信息数据，包含商品id、商品类目id等信息
 
 ## 特征工程
 
@@ -145,6 +221,17 @@ python main.py --gnn_type sage --use_xgboost --output_dir output
 - 混合模型：结合GNN和XGBoost的优势
 
 系统采用了混合模型架构，利用GNN捕获网络拓扑结构信息，同时使用XGBoost处理特征交互和非线性关系，综合提高预测准确率。
+
+## 注意事项
+
+1. **处理大型数据集**：对于大型数据集，建议先使用采样功能进行模型调试，确认无误后再使用完整数据集训练最终模型。
+
+2. **ID类型处理**：系统支持处理不同格式的ID（整数或字符串），会自动将所有ID转换为字符串格式以确保一致性。
+
+3. **内存优化**：如果遇到内存不足的问题，可以尝试以下方法：
+   - 降低采样率（如`--sampling_rate 0.01`）
+   - 减小模型参数（如`--hidden_channels 64 --embedding_dim 32`）
+   - 增加系统交换空间
 
 ## 参考文献
 

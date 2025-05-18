@@ -330,52 +330,108 @@ def process_batch(file_path, batch_size=10000):
             return result_df
         raise
 
-def preprocess_data():
+def preprocess_data(item_share_df=None, user_info_df=None, item_info_df=None):
     """
     预处理数据
+    
+    参数:
+        item_share_df: 预先加载的商品分享数据DataFrame，如果为None则从文件加载
+        user_info_df: 预先加载的用户信息DataFrame，如果为None则从文件加载
+        item_info_df: 预先加载的商品信息DataFrame，如果为None则从文件加载
+    
+    返回:
+        处理后的DataFrame元组 (item_share_df, user_info_df, item_info_df)
     """
     try:
         print("开始数据预处理...")
         
-        # 加载数据
-        print(f"加载商品分享训练数据: {ITEM_SHARE_FILE}")
-        try:
-            item_share_data = load_json_data(ITEM_SHARE_FILE)
-            item_share_df = convert_to_dataframe(item_share_data)
-        except Exception as e:
-            print(f"加载标准方式失败，尝试修复JSON文件: {str(e)}")
-            fixed_file = fix_json_file(ITEM_SHARE_FILE)
-            if fixed_file:
-                print(f"尝试从修复后的文件加载数据: {fixed_file}")
-                try:
-                    item_share_data = load_json_data(fixed_file)
-                    item_share_df = convert_to_dataframe(item_share_data)
-                except:
-                    print("从修复后的文件加载仍然失败，尝试使用pandas直接读取")
+        # 如果未提供预先加载的数据，则从文件加载
+        if item_share_df is None:
+            # 加载数据
+            print(f"加载商品分享训练数据: {ITEM_SHARE_FILE}")
+            try:
+                item_share_data = load_json_data(ITEM_SHARE_FILE)
+                item_share_df = convert_to_dataframe(item_share_data)
+            except Exception as e:
+                print(f"加载标准方式失败，尝试修复JSON文件: {str(e)}")
+                fixed_file = fix_json_file(ITEM_SHARE_FILE)
+                if fixed_file:
+                    print(f"尝试从修复后的文件加载数据: {fixed_file}")
                     try:
-                        item_share_df = pd.read_json(fixed_file)
+                        item_share_data = load_json_data(fixed_file)
+                        item_share_df = convert_to_dataframe(item_share_data)
                     except:
-                        print("pandas读取失败，尝试分批处理")
-                        item_share_df = process_batch(fixed_file)
-            else:
-                print("修复文件失败，尝试分批处理原始文件")
-                item_share_df = process_batch(ITEM_SHARE_FILE)
-        
-        print(f"商品分享数据加载完成，形状: {item_share_df.shape}")
+                        print("从修复后的文件加载仍然失败，尝试使用pandas直接读取")
+                        try:
+                            item_share_df = pd.read_json(fixed_file)
+                        except:
+                            print("pandas读取失败，尝试分批处理")
+                            item_share_df = process_batch(fixed_file)
+                else:
+                    print("修复文件失败，尝试分批处理原始文件")
+                    item_share_df = process_batch(ITEM_SHARE_FILE)
+            
+            print(f"商品分享数据加载完成，形状: {item_share_df.shape}")
+        else:
+            print("使用预先加载的商品分享数据")
         
         # 转换时间戳列为日期时间类型
         if 'timestamp' in item_share_df.columns:
             item_share_df['timestamp'] = pd.to_datetime(item_share_df['timestamp'])
         
-        print(f"加载用户信息数据: {USER_INFO_FILE}")
-        user_info_data = load_json_data(USER_INFO_FILE)
-        user_info_df = convert_to_dataframe(user_info_data)
-        print(f"用户信息数据加载完成，形状: {user_info_df.shape}")
+        if user_info_df is None:
+            print(f"加载用户信息数据: {USER_INFO_FILE}")
+            user_info_data = load_json_data(USER_INFO_FILE)
+            user_info_df = convert_to_dataframe(user_info_data)
+            print(f"用户信息数据加载完成，形状: {user_info_df.shape}")
+        else:
+            print("使用预先加载的用户信息数据")
         
-        print(f"加载商品信息数据: {ITEM_INFO_FILE}")
-        item_info_data = load_json_data(ITEM_INFO_FILE)
-        item_info_df = convert_to_dataframe(item_info_data)
-        print(f"商品信息数据加载完成，形状: {item_info_df.shape}")
+        if item_info_df is None:
+            print(f"加载商品信息数据: {ITEM_INFO_FILE}")
+            item_info_data = load_json_data(ITEM_INFO_FILE)
+            item_info_df = convert_to_dataframe(item_info_data)
+            print(f"商品信息数据加载完成，形状: {item_info_df.shape}")
+        else:
+            print("使用预先加载的商品信息数据")
+        
+        # 处理缺失值
+        # 用户信息
+        user_info_df = user_info_df.fillna({
+            'user_gender': -1,  # 未知性别
+            'user_age': -1,     # 未知年龄
+            'user_level': 0     # 默认级别
+        })
+        
+        # 商品信息
+        item_info_df = item_info_df.fillna({
+            'cate_id': -1,
+            'cate_level1_id': -1,
+            'brand_id': -1,
+            'shop_id': -1
+        })
+        
+        # 商品分享数据
+        item_share_df = item_share_df.dropna(subset=['inviter_id', 'item_id', 'voter_id'])
+        
+        # 检查ID列的数据类型，不再强制转换为整数
+        print("检查ID列的数据类型...")
+        print(f"inviter_id类型: {item_share_df['inviter_id'].dtype}")
+        print(f"item_id类型: {item_share_df['item_id'].dtype}")
+        if 'voter_id' in item_share_df.columns:
+            print(f"voter_id类型: {item_share_df['voter_id'].dtype}")
+        print(f"user_id类型: {user_info_df['user_id'].dtype}")
+        print(f"item_id类型: {item_info_df['item_id'].dtype}")
+        
+        # 确保ID列的类型一致性（训练集和测试集可能有不同的类型）
+        # 如果训练集中的ID是整数，但测试集中是字符串，则将训练集转换为字符串
+        # 这样可以确保在后续处理中ID的类型一致
+        item_share_df['inviter_id'] = item_share_df['inviter_id'].astype(str)
+        item_share_df['item_id'] = item_share_df['item_id'].astype(str)
+        if 'voter_id' in item_share_df.columns:
+            item_share_df['voter_id'] = item_share_df['voter_id'].astype(str)
+        user_info_df['user_id'] = user_info_df['user_id'].astype(str)
+        item_info_df['item_id'] = item_info_df['item_id'].astype(str)
         
         # 检查缺失值
         print("\n数据缺失值统计:")
