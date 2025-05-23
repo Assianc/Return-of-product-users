@@ -1,345 +1,221 @@
 import pandas as pd
 import numpy as np
+import json
 from datetime import datetime, timedelta
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+import os
+from tqdm import tqdm
+import pickle
+from sklearn.preprocessing import LabelEncoder
+import networkx as nx
 
-def create_user_features(item_share_df, user_info_df):
-    """
-    根据用户行为和信息创建用户特征
-    """
-    # 合并用户信息
-    user_features = user_info_df.copy()
-    
-    # 计算用户作为邀请者的统计特征
-    inviter_stats = item_share_df.groupby('inviter_id').agg({
-        'voter_id': ['count', 'nunique'],  # 邀请的总人数和唯一人数
-        'item_id': ['nunique']  # 分享的唯一商品数
-    })
-    inviter_stats.columns = ['invites_count', 'unique_voters_count', 'unique_items_shared']
-    
-    # 计算用户作为被邀请者的统计特征
-    voter_stats = item_share_df.groupby('voter_id').agg({
-        'inviter_id': ['count', 'nunique'],  # 被邀请的总次数和唯一邀请人数
-        'item_id': ['nunique']  # 查看的唯一商品数
-    })
-    voter_stats.columns = ['times_invited', 'unique_inviters_count', 'unique_items_viewed']
-    
-    # 计算RFM指标（Recency, Frequency, Monetary - 在这里我们主要关注Recency和Frequency）
-    # 获取数据集中最大时间作为当前时间参考点
-    max_time = item_share_df['timestamp'].max()
-    
-    # 计算用户最近一次作为邀请者的时间差（Recency）
-    inviter_latest = item_share_df.groupby('inviter_id')['timestamp'].max().reset_index()
-    inviter_latest['recency_inviter'] = (max_time - inviter_latest['timestamp']).dt.total_seconds() / 86400  # 转换为天数
-    inviter_recency = inviter_latest[['inviter_id', 'recency_inviter']].set_index('inviter_id')
-    
-    # 计算用户最近一次作为被邀请者的时间差（Recency）
-    voter_latest = item_share_df.groupby('voter_id')['timestamp'].max().reset_index()
-    voter_latest['recency_voter'] = (max_time - voter_latest['timestamp']).dt.total_seconds() / 86400  # 转换为天数
-    voter_recency = voter_latest[['voter_id', 'recency_voter']].set_index('voter_id')
-    
-    # 合并所有用户特征
-    user_features = user_features.join(inviter_stats, how='left')
-    user_features = user_features.join(voter_stats, how='left')
-    user_features = user_features.join(inviter_recency, how='left')
-    user_features = user_features.join(voter_recency, how='left')
-    
-    # 填充缺失值
-    user_features.fillna({
-        'invites_count': 0,
-        'unique_voters_count': 0,
-        'unique_items_shared': 0,
-        'times_invited': 0,
-        'unique_inviters_count': 0,
-        'unique_items_viewed': 0,
-        'recency_inviter': 999,  # 一个很大的值表示从未作为邀请者
-        'recency_voter': 999,  # 一个很大的值表示从未作为被邀请者
-    }, inplace=True)
-    
-    # 计算用户的社交活跃度（邀请次数/被邀请次数的比率）
-    user_features['social_activity_ratio'] = user_features['invites_count'] / (user_features['times_invited'] + 1)
-    
-    # 根据用户的RFM指标对用户进行分类
-    user_features['user_activity_score'] = (
-        user_features['invites_count'] + 
-        user_features['times_invited'] + 
-        user_features['unique_items_shared'] + 
-        user_features['unique_items_viewed']
-    ) / (user_features['recency_inviter'] + user_features['recency_voter'] + 2)  # 加2避免除以0
-    
-    return user_features
+# 创建结果文件夹
+if not os.path.exists('results'):
+    os.makedirs('results')
+if not os.path.exists('results/features'):
+    os.makedirs('results/features')
 
-def create_item_features(item_share_df, item_info_df):
-    """
-    根据商品信息和分享行为创建商品特征
-    """
-    # 合并商品信息
-    item_features = item_info_df.copy()
-    
-    # 计算商品的统计特征
-    item_stats = item_share_df.groupby('item_id').agg({
-        'inviter_id': ['count', 'nunique'],  # 商品被分享的总次数和唯一分享者数
-        'voter_id': ['nunique']  # 商品的唯一查看者数
-    })
-    item_stats.columns = ['times_shared', 'unique_sharers', 'unique_viewers']
-    
-    # 计算商品的流行度（被分享次数）
-    item_stats['popularity'] = item_stats['times_shared']
-    
-    # 计算商品的转化率（唯一查看者/唯一分享者）
-    item_stats['conversion_rate'] = item_stats['unique_viewers'] / item_stats['unique_sharers']
-    
-    # 合并所有商品特征
-    item_features = item_features.join(item_stats, how='left')
-    
-    # 填充缺失值
-    item_features.fillna({
-        'times_shared': 0,
-        'unique_sharers': 0,
-        'unique_viewers': 0,
-        'popularity': 0,
-        'conversion_rate': 0
-    }, inplace=True)
-    
-    return item_features
+print("开始特征工程...")
 
-def create_interaction_features(item_share_df, user_features, item_features):
-    """
-    创建用户-商品交互特征
-    """
-    # 创建用户-商品对及其交互次数
-    user_item_interactions = item_share_df.groupby(['inviter_id', 'item_id']).size().reset_index(name='interaction_count')
-    
-    # 合并用户特征和商品特征
-    interaction_features = user_item_interactions.copy()
-    interaction_features = pd.merge(
-        interaction_features, 
-        user_features.reset_index(), 
-        left_on='inviter_id', 
-        right_on='user_id', 
-        how='left'
-    )
-    interaction_features = pd.merge(
-        interaction_features, 
-        item_features.reset_index(), 
-        on='item_id', 
-        how='left'
-    )
-    
-    # 创建用户-商品交互特征
-    # 例如：用户社交活跃度与商品流行度的结合
-    interaction_features['social_popularity'] = interaction_features['social_activity_ratio'] * interaction_features['popularity']
-    
-    return interaction_features
-
-def create_time_features(item_share_df):
-    """
-    创建时间相关特征
-    """
-    time_features = item_share_df.copy()
-    
-    # 提取时间特征
-    time_features['hour'] = time_features['timestamp'].dt.hour
-    time_features['day'] = time_features['timestamp'].dt.day
-    time_features['month'] = time_features['timestamp'].dt.month
-    time_features['dayofweek'] = time_features['timestamp'].dt.dayofweek
-    time_features['is_weekend'] = time_features['dayofweek'].isin([5, 6]).astype(int)
-    
-    # 一天中的时段分类
-    time_features['time_period'] = pd.cut(
-        time_features['hour'], 
-        bins=[0, 6, 12, 18, 24], 
-        labels=['night', 'morning', 'afternoon', 'evening']
-    )
-    
-    # 将时段转换为数值型特征
-    time_period_encoder = LabelEncoder()
-    time_features['time_period_encoded'] = time_period_encoder.fit_transform(time_features['time_period'])
-    
-    return time_features
-
-def create_graph_features(item_share_df):
-    """
-    创建图结构相关特征
-    """
-    import networkx as nx
-    
-    # 构建用户社交图
-    G = nx.DiGraph()
-    
-    # 添加边：inviter_id -> voter_id
-    for _, row in item_share_df.iterrows():
-        G.add_edge(row['inviter_id'], row['voter_id'])
-    
-    # 计算每个用户的中心性指标
-    node_degree = dict(G.degree())
-    in_degree = dict(G.in_degree())
-    out_degree = dict(G.out_degree())
-    
-    try:
-        # 尝试计算PageRank，但可能因为图太大而内存不足
-        pagerank = nx.pagerank(G, alpha=0.85, max_iter=100)
-    except:
-        # 如果内存不足，则使用近似值
-        pagerank = {node: (out_degree.get(node, 0) + 1) / (sum(out_degree.values()) + len(G.nodes())) for node in G.nodes()}
-    
-    # 将图特征转换为DataFrame
-    graph_features = pd.DataFrame({
-        'user_id': list(G.nodes()),
-        'degree': [node_degree.get(node, 0) for node in G.nodes()],
-        'in_degree': [in_degree.get(node, 0) for node in G.nodes()],
-        'out_degree': [out_degree.get(node, 0) for node in G.nodes()],
-        'pagerank': [pagerank.get(node, 0) for node in G.nodes()]
-    })
-    
-    # 设置索引
-    graph_features.set_index('user_id', inplace=True)
-    
-    return graph_features
-
-def build_features(train_df, user_info_df, item_info_df, feature_limit=None):
-    """
-    构建所有特征
-    
-    参数:
-    train_df: 训练数据
-    user_info_df: 用户信息数据
-    item_info_df: 商品信息数据
-    feature_limit: 特征数量限制，如果不为None，则只保留指定数量的特征
-    
-    返回:
-    包含所有特征的DataFrame
-    """
-    print("创建用户特征...")
-    user_features = create_user_features(train_df, user_info_df)
-    
-    print("创建商品特征...")
-    item_features = create_item_features(train_df, item_info_df)
-    
-    print("创建用户-商品交互特征...")
-    interaction_features = create_interaction_features(train_df, user_features, item_features)
-    
-    print("创建时间特征...")
-    time_features = create_time_features(train_df)
-    
-    # 如果内存受限，可以选择跳过图结构特征
-    if feature_limit is not None and feature_limit < 50:  # 假设较小的feature_limit表示内存严重受限
-        print("由于特征数量限制，跳过图结构特征计算...")
-        graph_features = None
+# 从文件读取数据
+def read_json_to_df(file_path, chunk_size=None):
+    if chunk_size:
+        chunks = []
+        with open(file_path, 'r', encoding='utf-8') as f:
+            chunk = []
+            for i, line in tqdm(enumerate(f), desc=f"Reading {file_path}"):
+                try:
+                    chunk.append(json.loads(line))
+                    if (i + 1) % chunk_size == 0:
+                        chunks.append(pd.DataFrame(chunk))
+                        chunk = []
+                except Exception as e:
+                    print(f"Error parsing line {i}: {e}")
+            if chunk:  # 添加最后一个不完整的chunk
+                chunks.append(pd.DataFrame(chunk))
+        
+        if not chunks:
+            return pd.DataFrame()
+        
+        return pd.concat(chunks, ignore_index=True)
     else:
-        print("创建图结构特征...")
-        try:
-            graph_features = create_graph_features(train_df)
-        except MemoryError:
-            print("创建图结构特征时内存不足，跳过此步骤...")
-            graph_features = None
-        except Exception as e:
-            print(f"创建图结构特征时出错: {str(e)}，跳过此步骤...")
-            graph_features = None
-    
-    # 整合所有特征
-    print("整合所有特征...")
-    
-    # 合并用户特征
-    features = pd.merge(
-        train_df, 
-        user_features.reset_index(),
-        left_on='inviter_id', 
-        right_on='user_id', 
-        how='left',
-        suffixes=('', '_inviter')
-    )
-    
-    # 合并被邀请用户特征
-    features = pd.merge(
-        features, 
-        user_features.reset_index(),
-        left_on='voter_id', 
-        right_on='user_id', 
-        how='left',
-        suffixes=('', '_voter')
-    )
-    
-    # 合并商品特征
-    features = pd.merge(
-        features, 
-        item_features.reset_index(),
-        on='item_id', 
-        how='left'
-    )
-    
-    # 合并图结构特征 (如果有)
-    if graph_features is not None:
-        # 合并作为邀请者的图特征
-        features = pd.merge(
-            features,
-            graph_features.reset_index(),
-            left_on='inviter_id',
-            right_on='user_id',
-            how='left',
-            suffixes=('', '_inviter_graph')
-        )
-        
-        # 合并作为被邀请者的图特征
-        features = pd.merge(
-            features,
-            graph_features.reset_index(),
-            left_on='voter_id',
-            right_on='user_id',
-            how='left',
-            suffixes=('', '_voter_graph')
-        )
-    
-    # 提取时间特征并合并
-    time_cols = ['hour', 'day', 'month', 'dayofweek', 'is_weekend', 'time_period_encoded']
-    features = pd.merge(
-        features,
-        time_features[['inviter_id', 'item_id', 'timestamp'] + time_cols],
-        on=['inviter_id', 'item_id', 'timestamp'],
-        how='left'
-    )
-    
-    # 处理缺失值
-    features.fillna(0, inplace=True)
-    
-    # 如果指定了特征数量限制，则按重要性选择特征
-    if feature_limit is not None and features.shape[1] > feature_limit:
-        print(f"特征总数 {features.shape[1]} 超过限制 {feature_limit}，执行特征选择...")
-        
-        # 保留必要的ID列和目标变量
-        essential_columns = ['inviter_id', 'voter_id', 'item_id', 'timestamp']
-        
-        # 计算每个特征的方差，方差高的特征可能包含更多信息
-        feature_cols = [col for col in features.columns if col not in essential_columns]
-        
-        # 计算特征方差
-        feature_variance = features[feature_cols].var()
-        
-        # 选择方差最高的特征
-        selected_features = feature_variance.nlargest(feature_limit - len(essential_columns)).index.tolist()
-        
-        # 添加必要的列
-        selected_columns = essential_columns + selected_features
-        
-        print(f"选择了 {len(selected_columns)} 个特征")
-        return features[selected_columns]
-    
-    return features
+        data = []
+        with open(file_path, 'r', encoding='utf-8') as f:
+            for i, line in enumerate(tqdm(f, desc=f"Reading {file_path}")):
+                try:
+                    data.append(json.loads(line))
+                except Exception as e:
+                    print(f"Error parsing line {i}: {e}")
+        return pd.DataFrame(data)
 
-if __name__ == "__main__":
-    from data_preprocessing import preprocess_data, split_data
+# 加载训练集数据
+print("加载数据...")
+train_data = read_json_to_df('data/train/item_share_train_info.json', chunk_size=200000)
+user_info = read_json_to_df('data/train/user_info.json')
+item_info = read_json_to_df('data/train/item_info.json', chunk_size=100000)
+test_data = read_json_to_df('data/test/item_share_preliminary_test_info.json')
+
+# 转换时间戳为datetime类型
+train_data['timestamp'] = pd.to_datetime(train_data['timestamp'])
+test_data['timestamp'] = pd.to_datetime(test_data['timestamp'])
+
+# 添加triple_id到测试集
+test_data['triple_id'] = test_data.index.astype(str)
+
+# 特征工程
+print("生成特征...")
+
+# 1. 构建用户-商品交互矩阵
+print("构建用户-商品交互矩阵...")
+user_item_matrix = train_data.groupby(['inviter_id', 'item_id']).size().reset_index(name='interaction_count')
+
+# 2. 构建用户-用户交互网络
+print("构建用户-用户交互网络...")
+user_user_matrix = train_data.groupby(['inviter_id', 'voter_id']).size().reset_index(name='interaction_count')
+
+# 3. 提取时间特征
+train_data['hour'] = train_data['timestamp'].dt.hour
+train_data['day_of_week'] = train_data['timestamp'].dt.dayofweek
+train_data['month'] = train_data['timestamp'].dt.month
+train_data['day'] = train_data['timestamp'].dt.day
+
+# 对测试集也提取同样的时间特征
+test_data['hour'] = test_data['timestamp'].dt.hour
+test_data['day_of_week'] = test_data['timestamp'].dt.dayofweek
+test_data['month'] = test_data['timestamp'].dt.month
+test_data['day'] = test_data['timestamp'].dt.day
+
+# 4. 用户活跃度特征
+print("计算用户活跃度特征...")
+user_invites = train_data['inviter_id'].value_counts().reset_index()
+user_invites.columns = ['user_id', 'invite_count']
+
+user_votes = train_data['voter_id'].value_counts().reset_index()
+user_votes.columns = ['user_id', 'voted_count']
+
+user_activity = pd.merge(user_invites, user_votes, on='user_id', how='outer').fillna(0)
+
+# 5. 商品流行度特征
+print("计算商品流行度特征...")
+item_popularity = train_data['item_id'].value_counts().reset_index()
+item_popularity.columns = ['item_id', 'item_popularity']
+
+# 6. 社交网络特征
+print("生成社交网络特征...")
+# 构建图
+G = nx.DiGraph()
+edges = list(zip(train_data['inviter_id'], train_data['voter_id']))
+G.add_edges_from(edges)
+
+# 计算每个用户的中心性指标
+# 通过抽样计算中心性指标，避免内存溢出
+sample_nodes = list(G.nodes())
+if len(sample_nodes) > 10000:
+    sample_nodes = np.random.choice(sample_nodes, 10000, replace=False)
+
+print("计算度中心性...")
+in_degree = {node: val for node, val in G.in_degree(sample_nodes)}
+out_degree = {node: val for node, val in G.out_degree(sample_nodes)}
+
+print("计算介数中心性（可能较慢）...")
+# 抽取一个小子图计算介数中心性（完整计算太慢）
+subgraph_nodes = np.random.choice(list(G.nodes()), min(1000, len(G.nodes())), replace=False)
+subgraph = G.subgraph(subgraph_nodes)
+betweenness = nx.betweenness_centrality(subgraph)
+
+# 保存网络特征
+network_features = pd.DataFrame({
+    'user_id': list(in_degree.keys()),
+    'in_degree': list(in_degree.values()),
+    'out_degree': list(out_degree.values())
+})
+
+# 将介数中心性添加到网络特征中
+betweenness_df = pd.DataFrame({
+    'user_id': list(betweenness.keys()),
+    'betweenness': list(betweenness.values())
+})
+network_features = pd.merge(network_features, betweenness_df, on='user_id', how='left')
+
+# 7. 用户-商品交互频次特征
+print("计算用户-商品交互频次...")
+user_item_freq = train_data.groupby(['inviter_id', 'item_id']).size().reset_index(name='interaction_freq')
+
+# 8. 用户-类别交互频次特征
+print("计算用户-类别交互频次...")
+train_with_item = pd.merge(train_data, item_info, on='item_id', how='left')
+user_cate_freq = train_with_item.groupby(['inviter_id', 'cate_id']).size().reset_index(name='cate_interaction_freq')
+user_cate1_freq = train_with_item.groupby(['inviter_id', 'cate_level1_id']).size().reset_index(name='cate1_interaction_freq')
+
+# 9. 用户相似度特征
+print("计算用户相似度特征...")
+# 对于每个用户对，计算他们共同交互的商品数量
+user_item_matrix = train_data.groupby(['inviter_id', 'item_id']).size().reset_index(name='count')
+user_item_pivot = user_item_matrix.pivot(index='inviter_id', columns='item_id', values='count').fillna(0)
+
+# 为测试集准备特征
+print("为测试集准备特征...")
+# 合并用户信息
+test_with_user = pd.merge(test_data, user_info, left_on='inviter_id', right_on='user_id', how='left')
+# 合并商品信息
+test_with_item = pd.merge(test_with_user, item_info, on='item_id', how='left')
+# 合并用户活跃度
+test_with_activity = pd.merge(test_with_item, user_invites, left_on='inviter_id', right_on='user_id', how='left')
+test_with_activity = pd.merge(test_with_activity, user_votes, left_on='inviter_id', right_on='user_id', how='left', suffixes=('', '_voter'))
+# 合并商品流行度
+test_with_popularity = pd.merge(test_with_activity, item_popularity, on='item_id', how='left')
+
+# 用户-商品历史交互特征
+print("生成用户-商品历史交互特征...")
+# 对于每个测试样本，查找该用户之前是否与该商品有过交互
+test_user_item_history = []
+for idx, row in tqdm(test_with_popularity.iterrows(), total=len(test_with_popularity)):
+    inviter_id = row['inviter_id']
+    item_id = row['item_id']
+    has_interaction = int(((train_data['inviter_id'] == inviter_id) & (train_data['item_id'] == item_id)).any())
+    test_user_item_history.append(has_interaction)
+
+test_with_popularity['has_interaction'] = test_user_item_history
+
+# 生成候选集特征
+print("为每个测试样本生成候选集特征...")
+# 针对每个测试样本，找出邀请者之前邀请过的回流者
+test_candidate_features = []
+
+for idx, row in tqdm(test_with_popularity.iterrows(), total=len(test_with_popularity)):
+    inviter_id = row['inviter_id']
     
-    # 加载并预处理数据
-    item_share_df, user_info_df, item_info_df = preprocess_data()
+    # 该邀请者之前邀请过的回流者
+    previous_voters = train_data[train_data['inviter_id'] == inviter_id]['voter_id'].value_counts()
     
-    # 划分训练集和测试集
-    train_df, test_df = split_data(item_share_df)
+    if len(previous_voters) > 0:
+        # 取前5个最常交互的回流者
+        top_voters = previous_voters.nlargest(5).index.tolist()
+        # 如果不足5个，用-1填充
+        top_voters = top_voters + [-1] * (5 - len(top_voters))
+    else:
+        # 如果没有历史交互，全部填充-1
+        top_voters = [-1] * 5
     
-    # 构建特征
-    train_features = build_features(train_df, user_info_df, item_info_df)
-    test_features = build_features(test_df, user_info_df, item_info_df)
-    
-    # 保存特征数据（可选）
-    os.makedirs('processed_data', exist_ok=True)
-    train_features.to_csv('processed_data/train_features.csv', index=False)
-    test_features.to_csv('processed_data/test_features.csv', index=False) 
+    test_candidate_features.append({
+        'triple_id': row['triple_id'],
+        'candidate_voter_list': [str(v) for v in top_voters if v != -1]
+    })
+
+# 保存候选集特征为JSON文件
+with open('results/features/test_candidates.json', 'w', encoding='utf-8') as f:
+    for item in test_candidate_features:
+        f.write(json.dumps(item) + '\n')
+
+# 保存特征数据
+print("保存特征数据...")
+user_item_matrix.to_csv('results/features/user_item_matrix.csv', index=False)
+user_user_matrix.to_csv('results/features/user_user_matrix.csv', index=False)
+user_activity.to_csv('results/features/user_activity.csv', index=False)
+item_popularity.to_csv('results/features/item_popularity.csv', index=False)
+network_features.to_csv('results/features/network_features.csv', index=False)
+user_item_freq.to_csv('results/features/user_item_freq.csv', index=False)
+user_cate_freq.to_csv('results/features/user_cate_freq.csv', index=False)
+user_cate1_freq.to_csv('results/features/user_cate1_freq.csv', index=False)
+test_with_popularity.to_csv('results/features/test_features.csv', index=False)
+
+print("特征工程完成！特征数据保存在 results/features 文件夹中。") 

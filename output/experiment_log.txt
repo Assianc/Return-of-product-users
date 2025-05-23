@@ -847,3 +847,81 @@ NameError: name 'build_graph_from_interactions' is not defined
 [2025-05-18 13:29:43] 构建社交图谱...
 [2025-05-18 13:31:22] 图构建完成，节点数: 45903, 边数: 56461
 [2025-05-18 13:31:22] 准备链接预测数据...
+[2025-05-18 19:31:07] 开始执行实验，参数配置：Namespace(test_size=0.2, val_size=0.2, use_sampling=False, sampling_rate=0.3, gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=100, use_xgboost=False, random_state=42, output_dir='output')
+[2025-05-18 19:31:07] 开始数据预处理...
+[2025-05-18 19:31:07] 加载训练集文件: train/preliminary/item_share_train_info.json
+[2025-05-18 19:31:07] 数据预处理失败: File train/preliminary/item_share_train_info.json does not exist
+[2025-05-18 19:54:17] 开始执行完整流程...
+[2025-05-18 19:54:17] 第1阶段: 训练模型
+[2025-05-18 19:54:17] 开始执行实验，参数配置：GNN=GNNConfig(gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=50, batch_size=256, early_stopping_patience=5, use_gpu=True), Hybrid=HybridModelConfig(use_xgboost=True, xgb_params={'objective': 'binary:logistic', 'eval_metric': 'auc', 'max_depth': 6, 'eta': 0.1, 'subsample': 0.8, 'colsample_bytree': 0.8, 'num_boost_round': 100})
+[2025-05-18 19:54:17] 开始数据预处理...
+[2025-05-18 19:54:17] 数据预处理失败: File train/preliminary/item_share_train_info.json does not exist
+[2025-05-18 19:54:17] Traceback (most recent call last):
+  File "D:\Pycharm Projact\ReturnOfProductUsers\train.py", line 526, in train_all_models
+    train_df, test_df, user_info_df, item_info_df = load_datasets(
+                                                    ^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\data_utils.py", line 40, in load_datasets
+    train_df = pd.read_json(train_file)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\io\json\_json.py", line 791, in read_json
+    json_reader = JsonReader(
+                  ^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\io\json\_json.py", line 904, in __init__
+    data = self._get_data_from_filepath(filepath_or_buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\.venv\Lib\site-packages\pandas\io\json\_json.py", line 960, in _get_data_from_filepath
+    raise FileNotFoundError(f"File {filepath_or_buffer} does not exist")
+FileNotFoundError: File train/preliminary/item_share_train_info.json does not exist
+
+[2025-05-18 19:54:17] 第2阶段: 生成预测
+[2025-05-18 19:56:19] 开始执行完整流程...
+[2025-05-18 19:56:19] 第1阶段: 训练模型
+[2025-05-18 19:56:19] 开始执行实验，参数配置：GNN=GNNConfig(gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=50, batch_size=256, early_stopping_patience=5, use_gpu=True), Hybrid=HybridModelConfig(use_xgboost=True, xgb_params={'objective': 'binary:logistic', 'eval_metric': 'auc', 'max_depth': 6, 'eta': 0.1, 'subsample': 0.8, 'colsample_bytree': 0.8, 'num_boost_round': 100})
+[2025-05-18 19:56:19] 开始数据预处理...
+[2025-05-18 19:56:23] 数据预处理失败: 'i_93d6aacc775518e98e7c451c5214cb70'
+[2025-05-18 19:56:23] Traceback (most recent call last):
+  File "D:\Pycharm Projact\ReturnOfProductUsers\train.py", line 545, in train_all_models
+    train_data, val_data = prepare_link_prediction_data(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\data_utils.py", line 406, in prepare_link_prediction_data
+    src_nodes_train, dst_nodes_train, labels_train, timestamps_train = process_positive_samples(df_train, "训练集")
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\data_utils.py", line 384, in process_positive_samples
+    item_idx = node_mapping[item]
+               ~~~~~~~~~~~~^^^^^^
+KeyError: 'i_93d6aacc775518e98e7c451c5214cb70'
+
+[2025-05-18 19:56:24] 第2阶段: 生成预测
+[2025-05-18 20:00:42] 开始执行完整流程...
+[2025-05-18 20:00:42] 第1阶段: 训练模型
+[2025-05-18 20:00:42] 开始执行实验，参数配置：GNN=GNNConfig(gnn_type='sage', hidden_channels=128, embedding_dim=64, dropout=0.2, learning_rate=0.001, epochs=50, batch_size=256, early_stopping_patience=5, use_gpu=True), Hybrid=HybridModelConfig(use_xgboost=True, xgb_params={'objective': 'binary:logistic', 'eval_metric': 'auc', 'max_depth': 6, 'eta': 0.1, 'subsample': 0.8, 'colsample_bytree': 0.8, 'num_boost_round': 100})
+[2025-05-18 20:00:42] 开始数据预处理...
+[2025-05-18 20:00:46] 数据预处理失败: 'i_f0fadaabdd9ba842aba0ac74ca005bde'
+[2025-05-18 20:00:46] Traceback (most recent call last):
+  File "D:\Pycharm Projact\ReturnOfProductUsers\train.py", line 545, in train_all_models
+    train_data, val_data = prepare_link_prediction_data(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\data_utils.py", line 406, in prepare_link_prediction_data
+    src_nodes_train, dst_nodes_train, labels_train, timestamps_train = process_positive_samples(df_train, "训练集")
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\data_utils.py", line 384, in process_positive_samples
+    item_idx = node_mapping[item]
+               ~~~~~~~~~~~~^^^^^^
+KeyError: 'i_f0fadaabdd9ba842aba0ac74ca005bde'
+
+[2025-05-18 20:00:46] 第2阶段: 生成预测
+[2025-05-18 20:02:33] 开始执行完整流程...
+[2025-05-18 20:02:33] 第1阶段: 训练模型
+[2025-05-18 20:02:33] 开始执行实验，参数配置：GNN=GNNConfig(gnn_type='sage', hidden_channels=64, embedding_dim=32, dropout=0.2, learning_rate=0.001, epochs=50, batch_size=256, early_stopping_patience=5, use_gpu=True), Hybrid=HybridModelConfig(use_xgboost=True, xgb_params={'objective': 'binary:logistic', 'eval_metric': 'auc', 'max_depth': 6, 'eta': 0.1, 'subsample': 0.8, 'colsample_bytree': 0.8, 'num_boost_round': 100})
+[2025-05-18 20:02:33] 开始数据预处理...
+[2025-05-18 20:02:39] 数据预处理失败: 'function' object has no attribute 'nodes'
+[2025-05-18 20:02:39] Traceback (most recent call last):
+  File "D:\Pycharm Projact\ReturnOfProductUsers\train.py", line 545, in train_all_models
+    train_data, val_data = prepare_link_prediction_data(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm Projact\ReturnOfProductUsers\data_utils.py", line 418, in prepare_link_prediction_data
+    all_users = [n for n in G.nodes() if G.nodes[n]['node_type'] == 'user']
+                            ^^^^^^^
+AttributeError: 'function' object has no attribute 'nodes'
+
+[2025-05-18 20:02:40] 第2阶段: 生成预测

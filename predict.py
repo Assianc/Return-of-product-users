@@ -1,284 +1,301 @@
-import pandas as pd
-import numpy as np
+"""
+预测模块: 包含模型预测和结果生成功能
+"""
 import os
+import json
+import torch
 import pickle
-import argparse
-from datetime import datetime
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-import xgboost as xgb
-import lightgbm as lgb
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
-from data_preprocessing import preprocess_data
-from feature_engineering import build_features
+from config import data_config, gnn_config
+from models import GNN, LinkPredictor, HybridModel
+from data_utils import load_datasets
 
-def load_models(models_dir='models'):
-    """
-    加载已经训练好的模型
-    """
-    models = {}
-    
-    # 加载sklearn模型
-    for model_name in ['LogisticRegression', 'RandomForest', 'GBDT']:
-        model_path = os.path.join(models_dir, f"{model_name}.pkl")
-        if os.path.exists(model_path):
-            with open(model_path, 'rb') as f:
-                models[model_name] = pickle.load(f)
-    
-    # 加载XGBoost模型
-    xgb_model_path = os.path.join(models_dir, "XGBoost.pkl")
-    if os.path.exists(xgb_model_path):
-        with open(xgb_model_path, 'rb') as f:
-            models['XGBoost'] = pickle.load(f)
-    
-    # 加载LightGBM模型
-    lgb_model_path = os.path.join(models_dir, "LightGBM.pkl")
-    if os.path.exists(lgb_model_path):
-        with open(lgb_model_path, 'rb') as f:
-            models['LightGBM'] = pickle.load(f)
-    
-    # 加载Keras模型
-    for model_name in ['DNN', 'LSTM']:
-        model_path = os.path.join(models_dir, f"{model_name}.h5")
-        if os.path.exists(model_path):
-            models[model_name] = load_model(model_path)
-    
-    # 加载标签编码器和特征缩放器
-    with open(os.path.join(models_dir, "label_encoder.pkl"), 'rb') as f:
-        label_encoder = pickle.load(f)
-    
-    with open(os.path.join(models_dir, "scaler.pkl"), 'rb') as f:
-        scaler = pickle.load(f)
-    
-    return models, label_encoder, scaler
 
-def prepare_test_features(test_df, user_info_df, item_info_df, scaler, exclude_cols=None):
+def load_trained_models(models_dir=None):
     """
-    准备测试数据的特征
+    加载训练好的模型
+    
+    参数:
+        models_dir: 模型目录
+    
+    返回:
+        gnn_model: GNN模型
+        link_predictor: 链接预测器
+        node_features: 节点特征
+        edge_index: 边索引
+        node_mapping: 节点ID到索引的映射
     """
-    if exclude_cols is None:
-        exclude_cols = ['timestamp', 'inviter_id', 'item_id', 'voter_id', 
-                        'user_id', 'user_id_voter', 'user_id_inviter_graph', 'user_id_voter_graph',
-                        'time_period']
+    if models_dir is None:
+        models_dir = data_config.models_dir
     
-    # 构建特征
-    test_features = build_features(test_df, user_info_df, item_info_df)
+    print("加载训练好的模型...")
     
-    # 选择要使用的特征列
-    feature_cols = [col for col in test_features.columns if col not in exclude_cols]
-    X = test_features[feature_cols].copy()
+    # 加载节点特征和边索引
+    node_features_path = os.path.join(data_config.processed_data_dir, 'node_features.pt')
+    edge_index_path = os.path.join(data_config.processed_data_dir, 'edge_index.pt')
+    node_mapping_path = os.path.join(data_config.processed_data_dir, 'node_mapping.pkl')
     
-    # 处理缺失值
-    X.fillna(0, inplace=True)
+    try:
+        # 加载数据
+        node_features = torch.load(node_features_path)
+        edge_index = torch.load(edge_index_path)
+        
+        with open(node_mapping_path, 'rb') as f:
+            node_mapping = pickle.load(f)
+            
+        print(f"节点特征大小: {node_features.shape}, 边数量: {edge_index.shape[1]//2}")
+    except FileNotFoundError:
+        raise FileNotFoundError("找不到预处理的图数据文件，请先运行训练")
+    except Exception as e:
+        raise Exception(f"加载图数据失败: {str(e)}")
     
-    # 处理分类特征
-    cat_cols = ['user_gender', 'user_age', 'user_level', 
-                'user_gender_voter', 'user_age_voter', 'user_level_voter',
-                'cate_id']
-    cat_cols = [col for col in cat_cols if col in X.columns]
+    # 加载GNN模型
+    gnn_model_path = os.path.join(models_dir, 'gnn_model.pt')
+    link_predictor_path = os.path.join(models_dir, 'link_predictor.pt')
     
-    if cat_cols:
-        X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+    if not os.path.exists(gnn_model_path) or not os.path.exists(link_predictor_path):
+        # 如果没有训练好的模型，返回初始化的模型
+        print("找不到保存的模型文件，将使用新初始化的模型")
+        
+        # 初始化默认模型
+        in_channels = node_features.shape[1]
+        hidden_channels = gnn_config.hidden_channels
+        out_channels = gnn_config.embedding_dim
+        
+        gnn_model = GNN(in_channels, hidden_channels, out_channels, 
+                       dropout=gnn_config.dropout, gnn_type=gnn_config.gnn_type)
+        link_predictor = LinkPredictor(out_channels, hidden_channels)
+        
+        return gnn_model, link_predictor, node_features, edge_index, node_mapping
     
-    # 标准化数值特征
-    X = pd.DataFrame(scaler.transform(X), columns=X.columns)
+    try:
+        # 加载模型状态以检查参数形状
+        state_dict = torch.load(gnn_model_path, map_location='cpu')
+        
+        # 检查conv1.lin_l.weight的形状来确定hidden_channels
+        hidden_channels = state_dict['conv1.lin_l.weight'].shape[0]
+        
+        # 检查conv2.lin_l.weight的形状来确定embedding_dim
+        embedding_dim = state_dict['conv2.lin_l.weight'].shape[0]
+        
+        print(f"从保存的模型中读取参数大小: hidden_channels={hidden_channels}, embedding_dim={embedding_dim}")
+        
+        # 初始化模型使用检测到的参数大小
+        in_channels = node_features.shape[1]
+        
+        gnn_model = GNN(in_channels, hidden_channels, embedding_dim, 
+                     dropout=gnn_config.dropout, gnn_type=gnn_config.gnn_type)
+        link_predictor = LinkPredictor(embedding_dim, hidden_channels)
+        
+        # 加载模型参数
+        gnn_model.load_state_dict(state_dict)
+        link_predictor.load_state_dict(torch.load(link_predictor_path, map_location='cpu'))
+        
+        # 设置为评估模式
+        gnn_model.eval()
+        link_predictor.eval()
+        
+        print("模型加载完成")
+        
+    except Exception as e:
+        print(f"加载模型失败: {str(e)}")
+        print("将使用新初始化的模型")
+        
+        # 初始化默认模型
+        in_channels = node_features.shape[1]
+        hidden_channels = gnn_config.hidden_channels
+        out_channels = gnn_config.embedding_dim
+        
+        gnn_model = GNN(in_channels, hidden_channels, out_channels, 
+                       dropout=gnn_config.dropout, gnn_type=gnn_config.gnn_type)
+        link_predictor = LinkPredictor(out_channels, hidden_channels)
     
-    return X, test_features
+    return gnn_model, link_predictor, node_features, edge_index, node_mapping
 
-def ensemble_predict(models, X, label_encoder, weights=None):
-    """
-    集成多个模型的预测结果
-    """
-    predictions = {}
-    for model_name, model in models.items():
-        if model_name in ['LogisticRegression', 'RandomForest', 'GBDT']:
-            predictions[model_name] = model.predict_proba(X)
-        elif model_name == 'LightGBM':
-            predictions[model_name] = model.predict(X)
-        elif model_name == 'XGBoost':
-            ddata = xgb.DMatrix(X)
-            predictions[model_name] = model.predict(ddata)
-        elif model_name == 'DNN':
-            predictions[model_name] = model.predict(X)
-        elif model_name == 'LSTM':
-            X_3d = X.values.reshape(X.shape[0], 1, X.shape[1])
-            predictions[model_name] = model.predict(X_3d)
-    
-    # 如果没有提供权重，则使用均等权重
-    if weights is None:
-        weights = {model_name: 1/len(models) for model_name in models}
-    
-    # 计算加权平均预测概率
-    ensemble_proba = np.zeros((X.shape[0], len(label_encoder.classes_)))
-    for model_name, proba in predictions.items():
-        ensemble_proba += weights[model_name] * proba
-    
-    # 返回预测的类别和对应的概率
-    pred_class_indices = np.argmax(ensemble_proba, axis=1)
-    pred_classes = label_encoder.inverse_transform(pred_class_indices)
-    
-    return pred_classes, ensemble_proba
 
-def predict_top_k(models, test_features, scaler, label_encoder, top_k=5, exclude_cols=None):
+def generate_predictions(test_df, gnn_model, link_predictor, node_features, edge_index, node_mapping, 
+                         batch_size=100, top_k=5, use_xgboost=True):
     """
-    预测top-k个可能的voter_id
+    为测试集生成预测
+    
+    参数:
+        test_df: 测试数据
+        gnn_model: GNN模型
+        link_predictor: 链接预测器
+        node_features: 节点特征
+        edge_index: 边索引
+        node_mapping: 节点ID到索引的映射
+        batch_size: 批处理大小
+        top_k: 推荐数量
+        use_xgboost: 是否使用XGBoost
+        
+    返回:
+        predictions: 预测结果列表
     """
-    if exclude_cols is None:
-        exclude_cols = ['timestamp', 'inviter_id', 'item_id', 'voter_id', 
-                        'user_id', 'user_id_voter', 'user_id_inviter_graph', 'user_id_voter_graph',
-                        'time_period']
+    print("为测试集生成预测...")
     
-    # 准备特征
-    feature_cols = [col for col in test_features.columns if col not in exclude_cols]
-    X = test_features[feature_cols].copy()
+    # 创建混合模型
+    hybrid_model = HybridModel(gnn_model, link_predictor, node_features, edge_index, node_mapping, use_xgboost=use_xgboost)
     
-    # 处理缺失值
-    X.fillna(0, inplace=True)
+    # 加载XGBoost模型（如果存在）
+    if use_xgboost:
+        try:
+            hybrid_model.load(data_config.models_dir)
+            print("已加载XGBoost模型")
+        except Exception as e:
+            print(f"加载XGBoost模型失败: {e}, 将仅使用GNN")
+            hybrid_model.use_xgboost = False
     
-    # 处理分类特征
-    cat_cols = ['user_gender', 'user_age', 'user_level', 
-                'user_gender_voter', 'user_age_voter', 'user_level_voter',
-                'cate_id']
-    cat_cols = [col for col in cat_cols if col in X.columns]
+    # 预计算节点嵌入
+    hybrid_model.precompute_embeddings()
     
-    if cat_cols:
-        X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+    # 加载用户信息
+    _, _, user_info_df, _ = load_datasets()
     
-    # 标准化数值特征
-    X = pd.DataFrame(scaler.transform(X), columns=X.columns)
+    # 获取所有候选用户
+    all_users = list(user_info_df['user_id'].values)
+    print(f"总候选用户数量: {len(all_users)}")
     
-    # 使用集成模型预测
-    _, ensemble_proba = ensemble_predict(models, X, label_encoder)
+    # 预测结果列表
+    predictions = []
     
-    # 获取每个样本的top_k个预测结果
-    top_k_indices = np.argsort(-ensemble_proba, axis=1)[:, :top_k]
-    top_k_probs = np.take_along_axis(ensemble_proba, top_k_indices, axis=1)
+    # 对测试集的每个样本进行预测
+    print("开始生成预测...")
+    with tqdm(total=len(test_df), desc="生成预测") as pbar:
+        for idx, row in test_df.iterrows():
+            inviter_id = row['inviter_id']
+            item_id = row['item_id']
+            triple_id = row['triple_id']
+            timestamp = row['timestamp'] if 'timestamp' in row else None
+            
+            try:
+                # 推荐top-k voter
+                recommended_voters = hybrid_model.predict(
+                    inviter_id, 
+                    item_id, 
+                    all_users, 
+                    timestamp=timestamp,
+                    batch_size=batch_size
+                )
+                
+                # 确保推荐列表长度为top_k
+                if len(recommended_voters) < top_k:
+                    # 如果推荐不足，随机添加一些用户
+                    import random
+                    remaining = [u for u in all_users if u not in recommended_voters]
+                    additional = random.sample(remaining, min(top_k - len(recommended_voters), len(remaining)))
+                    recommended_voters.extend(additional)
+                
+                # 添加到预测结果
+                predictions.append({
+                    'triple_id': str(triple_id),
+                    'candidate_voter_list': [str(voter) for voter in recommended_voters[:top_k]]
+                })
+                
+            except Exception as e:
+                # 如果预测失败，随机推荐
+                print(f"预测ID {triple_id} 失败: {e}, 使用随机推荐")
+                import random
+                random_voters = random.sample(all_users, min(top_k, len(all_users)))
+                predictions.append({
+                    'triple_id': str(triple_id),
+                    'candidate_voter_list': [str(voter) for voter in random_voters]
+                })
+            
+            # 更新进度条
+            pbar.update(1)
     
-    # 转换为原始的voter_id
-    top_k_voter_ids = label_encoder.inverse_transform(top_k_indices.flatten()).reshape(top_k_indices.shape)
+    print(f"预测完成，生成了 {len(predictions)} 个预测结果")
     
-    # 构建结果DataFrame
-    results = []
-    for i in range(len(test_features)):
-        for k in range(top_k):
-            results.append({
-                'inviter_id': test_features.iloc[i]['inviter_id'],
-                'item_id': test_features.iloc[i]['item_id'],
-                'timestamp': test_features.iloc[i]['timestamp'],
-                'pred_voter_id': top_k_voter_ids[i, k],
-                'probability': top_k_probs[i, k],
-                'rank': k + 1
-            })
-    
-    results_df = pd.DataFrame(results)
-    return results_df
+    return predictions
 
-def main():
-    parser = argparse.ArgumentParser(description='预测voter_id')
-    parser.add_argument('--test_file', type=str, default='test/preliminary/test_data.json',
-                        help='测试数据文件路径')
-    parser.add_argument('--output_file', type=str, default='results/predictions.json',
-                        help='输出预测结果文件路径')
-    parser.add_argument('--models_dir', type=str, default='models',
-                        help='模型保存目录')
-    parser.add_argument('--top_k', type=int, default=5,
-                        help='返回前k个预测结果')
+
+def save_predictions(predictions, output_file=None):
+    """
+    保存预测结果
+    
+    参数:
+        predictions: 预测结果列表
+        output_file: 输出文件路径
+    """
+    if output_file is None:
+        output_file = os.path.join(data_config.results_dir, 'predictions.json')
+    
+    # 确保目录存在
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    
+    print(f"保存预测结果到: {output_file}")
+    
+    with open(output_file, 'w') as f:
+        json.dump(predictions, f)
+    
+    print("预测结果已保存")
+
+
+def run_prediction_pipeline(test_file=None, output_file=None, batch_size=100, top_k=5, use_xgboost=True):
+    """
+    运行完整的预测流程
+    
+    参数:
+        test_file: 测试文件路径
+        output_file: 输出文件路径
+        batch_size: 批处理大小
+        top_k: 推荐数量
+        use_xgboost: 是否使用XGBoost
+    """
+    if test_file is None:
+        test_file = data_config.test_file
+    
+    if output_file is None:
+        output_file = os.path.join(data_config.results_dir, 'predictions.json')
+    
+    print(f"开始预测流程，测试文件: {test_file}")
+    
+    # 加载测试数据
+    test_df = pd.read_json(test_file)
+    print(f"测试数据加载完成，共 {len(test_df)} 条记录")
+    
+    # 加载模型
+    gnn_model, link_predictor, node_features, edge_index, node_mapping = load_trained_models()
+    
+    # 生成预测
+    predictions = generate_predictions(
+        test_df, 
+        gnn_model, 
+        link_predictor, 
+        node_features, 
+        edge_index, 
+        node_mapping, 
+        batch_size=batch_size, 
+        top_k=top_k,
+        use_xgboost=use_xgboost
+    )
+    
+    # 保存预测结果
+    save_predictions(predictions, output_file)
+    
+    print("预测流程完成")
+
+
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='运行预测流程')
+    parser.add_argument('--test_file', type=str, default=None, help='测试文件路径')
+    parser.add_argument('--output_file', type=str, default=None, help='输出文件路径')
+    parser.add_argument('--batch_size', type=int, default=100, help='批处理大小')
+    parser.add_argument('--top_k', type=int, default=5, help='推荐数量')
+    parser.add_argument('--use_xgboost', action='store_true', help='是否使用XGBoost')
     
     args = parser.parse_args()
     
-    # 创建输出目录
-    os.makedirs(os.path.dirname(args.output_file), exist_ok=True)
-    
-    # 加载数据
-    print("加载数据...")
-    
-    # 加载预处理后的数据
-    # 如果测试数据不包含真实的voter_id，需要特殊处理
-    try:
-        # 尝试获取原始训练数据
-        item_share_df, user_info_df, item_info_df = preprocess_data()
-    except:
-        print("原始训练数据加载失败，尝试从保存的文件中加载")
-        user_info_df = pd.read_csv('processed_data/user_info.csv')
-        item_info_df = pd.read_csv('processed_data/item_info.csv')
-        item_share_df = None
-    
-    # 加载模型
-    print("加载模型...")
-    models, label_encoder, scaler = load_models(args.models_dir)
-    
-    # 加载测试数据
-    print(f"加载测试数据: {args.test_file}")
-    with open(args.test_file, 'r', encoding='utf-8') as f:
-        test_data = json.load(f)
-    
-    test_df = pd.DataFrame(test_data)
-    
-    # 如果测试数据没有voter_id字段，为了处理方便，添加一个虚拟的字段
-    if 'voter_id' not in test_df.columns:
-        test_df['voter_id'] = 'unknown'  # 添加一个占位符
-    
-    # 构建测试数据的特征
-    print("构建特征...")
-    test_features = build_features(test_df, user_info_df, item_info_df)
-    
-    # 预测top-k结果
-    print(f"预测top-{args.top_k}结果...")
-    results = predict_top_k(models, test_features, scaler, label_encoder, args.top_k)
-    
-    # 保存结果
-    print(f"保存预测结果到: {args.output_file}")
-    
-    # 将结果转换为需要的格式
-    # 例如: [{"inviter_id": "xxx", "item_id": "xxx", "timestamp": "xxx", "voter_id": "xxx"}, ...]
-    predictions = []
-    for inviter_id, group in results[results['rank'] == 1].groupby('inviter_id'):
-        for _, row in group.iterrows():
-            predictions.append({
-                'inviter_id': row['inviter_id'],
-                'item_id': row['item_id'],
-                'timestamp': row['timestamp'].strftime('%Y-%m-%d %H:%M:%S'),
-                'voter_id': row['pred_voter_id']
-            })
-    
-    # 保存为JSON格式
-    with open(args.output_file, 'w', encoding='utf-8') as f:
-        json.dump(predictions, f, ensure_ascii=False)
-    
-    # 如果测试数据有真实的voter_id，计算准确率
-    if 'voter_id' in test_df.columns and test_df['voter_id'].iloc[0] != 'unknown':
-        print("计算准确率...")
-        true_voter_ids = test_df['voter_id'].values
-        
-        for k in [1, 3, 5, 10]:
-            if k > args.top_k:
-                continue
-            
-            # 对每个测试样本，获取top-k预测结果
-            top_k_results = results[results['rank'] <= k]
-            correct_predictions = 0
-            
-            # 计算有多少样本的真实voter_id在top-k预测中
-            for idx, row in enumerate(true_voter_ids):
-                inviter_id = test_df.iloc[idx]['inviter_id']
-                item_id = test_df.iloc[idx]['item_id']
-                timestamp = test_df.iloc[idx]['timestamp']
-                
-                # 找到当前样本的预测结果
-                sample_preds = top_k_results[
-                    (top_k_results['inviter_id'] == inviter_id) & 
-                    (top_k_results['item_id'] == item_id) &
-                    (top_k_results['timestamp'] == timestamp)
-                ]
-                
-                # 检查真实voter_id是否在预测中
-                if row in sample_preds['pred_voter_id'].values:
-                    correct_predictions += 1
-            
-            accuracy = correct_predictions / len(true_voter_ids)
-            print(f"Top-{k} 准确率: {accuracy:.4f}")
-    
-    print("预测完成！")
-
-if __name__ == "__main__":
-    main() 
+    run_prediction_pipeline(
+        test_file=args.test_file,
+        output_file=args.output_file,
+        batch_size=args.batch_size,
+        top_k=args.top_k,
+        use_xgboost=args.use_xgboost
+    ) 
