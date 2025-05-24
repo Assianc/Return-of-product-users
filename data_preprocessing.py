@@ -1290,4 +1290,564 @@ except Exception as e:
     print(f"生成邀请者-商品二部图时出错: {e}")
     # 跳过这个可视化，继续执行后面的代码
 
-print("数据预处理和可视化完成！结果保存在 results 文件夹中。") 
+print("数据预处理和可视化完成！结果保存在 results 文件夹中。")
+
+# 添加更多高级可视化图表
+print("生成额外的高级可视化图表...")
+
+# 创建额外的可视化文件夹
+if not os.path.exists('results/figures/advanced'):
+    os.makedirs('results/figures/advanced')
+if not os.path.exists('results/figures/correlation'):
+    os.makedirs('results/figures/correlation')
+if not os.path.exists('results/figures/distribution'):
+    os.makedirs('results/figures/distribution')
+
+# 1. 用户行为时间热力图 - 按小时和日期的分布
+try:
+    print("生成用户行为时间热力图...")
+    
+    # 提取日期和小时
+    train_data['date_str'] = train_data['timestamp'].dt.strftime('%m-%d')
+    train_data['hour'] = train_data['timestamp'].dt.hour
+    
+    # 创建日期和小时的交叉表
+    date_hour_counts = pd.crosstab(train_data['date_str'], train_data['hour'])
+    
+    # 仅选择有足够数据的日期（最多30天）
+    top_dates = train_data['date_str'].value_counts().nlargest(30).index
+    date_hour_subset = date_hour_counts.loc[top_dates]
+    
+    plt.figure(figsize=(18, 10))
+    
+    # 使用更好的颜色映射
+    cmap = plt.cm.YlOrRd
+    
+    # 创建热力图
+    ax = sns.heatmap(date_hour_subset, cmap=cmap, linewidths=0.1, 
+                    cbar_kws={'label': '分享数量'})
+    
+    plt.title('用户行为时间热力图 (日期 × 小时)', fontsize=16, fontweight='bold')
+    plt.xlabel('小时', fontsize=12)
+    plt.ylabel('日期', fontsize=12)
+    
+    # 找出热点
+    max_val = date_hour_subset.max().max()
+    max_date = date_hour_subset.max(axis=1).idxmax()
+    max_hour = date_hour_subset.max().idxmax()
+    
+    plt.text(0.5, -0.07, f'热点时段: {max_date} {max_hour}时 (分享数量: {max_val})', 
+             ha='center', transform=ax.transAxes, fontsize=12,
+             bbox=dict(boxstyle='round,pad=0.5', facecolor='yellow', alpha=0.3))
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/user_behavior_heatmap.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户行为时间热力图时出错: {e}")
+
+# 2. 用户性别与年龄的交叉分析
+try:
+    print("生成用户性别与年龄的交叉分析图...")
+    
+    # 合并用户信息
+    user_demo = user_info[['user_id', 'user_gender', 'user_age']].copy()
+    user_demo['gender'] = user_demo['user_gender'].map({-1: '未知', 0: '女性', 1: '男性'})
+    user_demo['age'] = user_demo['user_age'].map(lambda x: '未知' if x == -1 else f'年龄段{x}')
+    
+    # 创建交叉表
+    gender_age_counts = pd.crosstab(user_demo['gender'], user_demo['age'])
+    
+    plt.figure(figsize=(14, 8))
+    
+    # 绘制堆叠条形图
+    gender_age_counts.plot(kind='bar', stacked=True, colormap='viridis')
+    
+    plt.title('用户性别与年龄分布', fontsize=16, fontweight='bold')
+    plt.xlabel('性别', fontsize=12)
+    plt.ylabel('用户数量', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.legend(title='年龄段')
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/gender_age_distribution.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # 百分比堆叠图
+    plt.figure(figsize=(14, 8))
+    
+    # 计算百分比
+    gender_age_pct = gender_age_counts.div(gender_age_counts.sum(axis=1), axis=0) * 100
+    
+    # 绘制百分比堆叠条形图
+    gender_age_pct.plot(kind='bar', stacked=True, colormap='viridis')
+    
+    plt.title('各性别用户的年龄段分布 (%)', fontsize=16, fontweight='bold')
+    plt.xlabel('性别', fontsize=12)
+    plt.ylabel('百分比 (%)', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.legend(title='年龄段')
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/gender_age_percentage.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户性别与年龄的交叉分析图时出错: {e}")
+
+# 3. 用户等级与活跃度的关系
+try:
+    print("生成用户等级与活跃度关系图...")
+    
+    # 计算每个用户的活跃度（分享次数）
+    user_activity = train_data['inviter_id'].value_counts().reset_index()
+    user_activity.columns = ['user_id', 'activity_count']
+    
+    # 合并用户等级信息
+    user_level_activity = pd.merge(
+        user_activity,
+        user_info[['user_id', 'user_level']],
+        on='user_id',
+        how='left'
+    )
+    
+    plt.figure(figsize=(12, 8))
+    
+    # 使用小提琴图展示分布
+    sns.violinplot(x='user_level', y='activity_count', data=user_level_activity, 
+                  palette='viridis', inner='quartile', cut=0)
+    
+    plt.title('用户等级与活跃度关系', fontsize=16, fontweight='bold')
+    plt.xlabel('用户等级', fontsize=12)
+    plt.ylabel('活跃度（分享次数）', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    
+    # 添加对数刻度以便更好地查看分布
+    plt.yscale('log')
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/user_level_activity.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # 添加箱线图
+    plt.figure(figsize=(12, 8))
+    sns.boxplot(x='user_level', y='activity_count', data=user_level_activity, palette='viridis')
+    
+    plt.title('用户等级与活跃度关系 (箱线图)', fontsize=16, fontweight='bold')
+    plt.xlabel('用户等级', fontsize=12)
+    plt.ylabel('活跃度（分享次数）', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.yscale('log')
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/user_level_activity_boxplot.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户等级与活跃度关系图时出错: {e}")
+
+# 4. 商品类别的流行度趋势（按时间）
+try:
+    print("生成商品类别流行度趋势图...")
+    
+    # 合并商品类别信息
+    item_share_category = pd.merge(
+        train_data[['item_id', 'timestamp', 'date']],
+        item_info[['item_id', 'cate_id']],
+        on='item_id',
+        how='left'
+    )
+    
+    # 获取前5个最流行的类别
+    top_categories = item_share_category['cate_id'].value_counts().nlargest(5).index
+    
+    # 过滤数据
+    top_category_data = item_share_category[item_share_category['cate_id'].isin(top_categories)]
+    
+    # 按日期和类别统计分享次数
+    category_trend = top_category_data.groupby(['date', 'cate_id']).size().reset_index(name='count')
+    
+    plt.figure(figsize=(16, 8))
+    
+    # 为每个类别绘制一条线
+    for i, category in enumerate(top_categories):
+        cat_data = category_trend[category_trend['cate_id'] == category]
+        plt.plot(cat_data['date'], cat_data['count'], 
+                marker='o', markersize=4, linewidth=2, 
+                label=f'类别 {category}')
+    
+    plt.title('热门商品类别的流行度趋势', fontsize=16, fontweight='bold')
+    plt.xlabel('日期', fontsize=12)
+    plt.ylabel('分享次数', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.legend(title='商品类别')
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/category_popularity_trend.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成商品类别流行度趋势图时出错: {e}")
+
+# 5. 用户相似度网络（基于共同分享的商品）
+try:
+    print("生成用户相似度网络图...")
+    
+    # 创建用户-商品矩阵 - 减少数据规模以避免内存错误
+    # 选择最活跃的用户和最热门的商品
+    top_users = train_data['inviter_id'].value_counts().nlargest(50).index
+    top_items = train_data['item_id'].value_counts().nlargest(100).index
+    
+    # 过滤数据
+    filtered_data = train_data[
+        (train_data['inviter_id'].isin(top_users)) & 
+        (train_data['item_id'].isin(top_items))
+    ]
+    
+    # 创建用户-商品矩阵
+    user_item_matrix = pd.crosstab(filtered_data['inviter_id'], filtered_data['item_id'])
+    
+    # 计算用户间的余弦相似度
+    from sklearn.metrics.pairwise import cosine_similarity
+    user_similarity = cosine_similarity(user_item_matrix)
+    
+    # 创建相似度DataFrame
+    similarity_df = pd.DataFrame(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
+    
+    # 创建网络图
+    G = nx.Graph()
+    
+    # 添加节点
+    for user in user_item_matrix.index:
+        G.add_node(user)
+    
+    # 添加边（仅添加相似度高于阈值的边）
+    threshold = 0.3
+    for i, user1 in enumerate(user_item_matrix.index):
+        for j, user2 in enumerate(user_item_matrix.index):
+            if i < j:  # 避免重复
+                similarity = similarity_df.loc[user1, user2]
+                if similarity > threshold:
+                    G.add_edge(user1, user2, weight=similarity)
+    
+    plt.figure(figsize=(16, 16))
+    
+    # 设置布局
+    pos = nx.spring_layout(G, k=0.3, seed=42)
+    
+    # 获取边权重
+    edge_weights = [G[u][v]['weight'] * 5 for u, v in G.edges()]
+    
+    # 获取节点度数
+    node_degrees = dict(G.degree())
+    node_sizes = [max(100, v * 20) for v in node_degrees.values()]
+    
+    # 绘制网络
+    nx.draw_networkx_nodes(G, pos, node_size=node_sizes, 
+                          node_color=list(node_degrees.values()), 
+                          cmap=plt.cm.viridis, alpha=0.8)
+    
+    nx.draw_networkx_edges(G, pos, width=edge_weights, alpha=0.5, edge_color='gray')
+    
+    plt.title('用户相似度网络（基于共同分享的商品）', fontsize=16, fontweight='bold')
+    plt.axis('off')
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/user_similarity_network.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户相似度网络图时出错: {e}")
+
+# 6. 商品属性相关性分析
+try:
+    print("生成商品属性相关性分析图...")
+    
+    # 合并商品信息和分享次数
+    item_share_count = train_data['item_id'].value_counts().reset_index()
+    item_share_count.columns = ['item_id', 'share_count']
+    
+    item_analysis = pd.merge(
+        item_share_count,
+        item_info,
+        on='item_id',
+        how='left'
+    )
+    
+    # 计算每个类别和品牌的平均分享次数
+    category_avg = item_analysis.groupby('cate_id')['share_count'].mean().reset_index()
+    category_avg.columns = ['cate_id', 'avg_shares']
+    category_avg = category_avg.sort_values('avg_shares', ascending=False)
+    
+    brand_avg = item_analysis.groupby('brand_id')['share_count'].mean().reset_index()
+    brand_avg.columns = ['brand_id', 'avg_shares']
+    brand_avg = brand_avg.sort_values('avg_shares', ascending=False)
+    
+    # 绘制类别平均分享次数
+    plt.figure(figsize=(14, 8))
+    
+    top_n = min(20, len(category_avg))
+    ax = sns.barplot(x='cate_id', y='avg_shares', data=category_avg.head(top_n), palette='viridis')
+    
+    plt.title('商品类别的平均分享次数 (Top 20)', fontsize=16, fontweight='bold')
+    plt.xlabel('商品类别', fontsize=12)
+    plt.ylabel('平均分享次数', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.xticks(rotation=90)
+    
+    # 添加数据标签
+    for i, v in enumerate(category_avg.head(top_n)['avg_shares']):
+        ax.text(i, v + 0.1, f'{v:.1f}', ha='center', fontsize=9)
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/category_avg_shares_analysis.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # 绘制品牌平均分享次数
+    plt.figure(figsize=(14, 8))
+    
+    top_n = min(20, len(brand_avg))
+    ax = sns.barplot(x='brand_id', y='avg_shares', data=brand_avg.head(top_n), palette='plasma')
+    
+    plt.title('商品品牌的平均分享次数 (Top 20)', fontsize=16, fontweight='bold')
+    plt.xlabel('商品品牌', fontsize=12)
+    plt.ylabel('平均分享次数', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.xticks(rotation=90)
+    
+    # 添加数据标签
+    for i, v in enumerate(brand_avg.head(top_n)['avg_shares']):
+        ax.text(i, v + 0.1, f'{v:.1f}', ha='center', fontsize=9)
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/brand_avg_shares_analysis.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成商品属性相关性分析图时出错: {e}")
+
+# 7. 用户行为模式分析 - 分享时间间隔
+try:
+    print("生成用户行为模式分析图...")
+    
+    # 选择活跃用户
+    active_users = train_data['inviter_id'].value_counts().nlargest(100).index
+    active_user_data = train_data[train_data['inviter_id'].isin(active_users)]
+    
+    # 按用户和时间戳排序
+    active_user_data = active_user_data.sort_values(['inviter_id', 'timestamp'])
+    
+    # 计算每个用户的分享时间间隔
+    active_user_data['prev_timestamp'] = active_user_data.groupby('inviter_id')['timestamp'].shift(1)
+    active_user_data['time_diff'] = (active_user_data['timestamp'] - active_user_data['prev_timestamp']).dt.total_seconds() / 3600  # 转换为小时
+    
+    # 过滤有效的时间差
+    valid_diffs = active_user_data.dropna(subset=['time_diff'])
+    
+    # 绘制时间间隔分布
+    plt.figure(figsize=(12, 8))
+    
+    # 限制范围以便更好地可视化
+    max_hours = 72  # 3天
+    filtered_diffs = valid_diffs[valid_diffs['time_diff'] <= max_hours]
+    
+    sns.histplot(filtered_diffs['time_diff'], bins=50, kde=True, color='#3498db')
+    
+    plt.title('用户分享行为的时间间隔分布', fontsize=16, fontweight='bold')
+    plt.xlabel('时间间隔（小时）', fontsize=12)
+    plt.ylabel('频次', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    
+    # 添加垂直线标记重要时间点
+    plt.axvline(x=24, color='r', linestyle='--', alpha=0.7, label='24小时')
+    plt.axvline(x=48, color='g', linestyle='--', alpha=0.7, label='48小时')
+    
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/sharing_time_intervals.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # 绘制对数刻度的时间间隔分布
+    plt.figure(figsize=(12, 8))
+    
+    # 使用对数变换
+    valid_diffs['log_time_diff'] = np.log1p(valid_diffs['time_diff'])
+    
+    sns.histplot(valid_diffs['log_time_diff'], bins=50, kde=True, color='#2ecc71')
+    
+    plt.title('用户分享行为的时间间隔分布（对数刻度）', fontsize=16, fontweight='bold')
+    plt.xlabel('时间间隔（对数小时）', fontsize=12)
+    plt.ylabel('频次', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/sharing_time_intervals_log.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户行为模式分析图时出错: {e}")
+
+# 8. 用户回流分析
+try:
+    print("生成用户回流分析图...")
+    
+    # 计算每个邀请者的回流率
+    inviter_stats = train_data.groupby('inviter_id').agg(
+        total_shares=('item_id', 'count'),
+        unique_voters=('voter_id', 'nunique')
+    ).reset_index()
+    
+    inviter_stats['return_rate'] = inviter_stats['unique_voters'] / inviter_stats['total_shares']
+    
+    # 按总分享次数分组
+    def get_share_group(count):
+        if count < 10:
+            return '<10'
+        elif count < 50:
+            return '10-50'
+        elif count < 100:
+            return '50-100'
+        elif count < 500:
+            return '100-500'
+        else:
+            return '>500'
+    
+    inviter_stats['share_group'] = inviter_stats['total_shares'].apply(get_share_group)
+    
+    # 计算每个组的平均回流率
+    group_stats = inviter_stats.groupby('share_group').agg(
+        avg_return_rate=('return_rate', 'mean'),
+        count=('inviter_id', 'count')
+    ).reset_index()
+    
+    # 确保组按正确顺序排列
+    group_order = ['<10', '10-50', '50-100', '100-500', '>500']
+    group_stats['share_group'] = pd.Categorical(group_stats['share_group'], categories=group_order, ordered=True)
+    group_stats = group_stats.sort_values('share_group')
+    
+    plt.figure(figsize=(12, 8))
+    
+    # 创建双轴图
+    fig, ax1 = plt.subplots(figsize=(12, 8))
+    
+    # 绘制回流率条形图
+    bars = ax1.bar(group_stats['share_group'], group_stats['avg_return_rate'], color='#3498db', alpha=0.7)
+    ax1.set_xlabel('分享次数组', fontsize=12)
+    ax1.set_ylabel('平均回流率', fontsize=12, color='#3498db')
+    ax1.tick_params(axis='y', labelcolor='#3498db')
+    ax1.grid(axis='y', linestyle='--', alpha=0.7)
+    
+    # 添加数据标签
+    for bar in bars:
+        height = bar.get_height()
+        ax1.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                f'{height:.2f}', ha='center', va='bottom', color='#3498db')
+    
+    # 创建第二个y轴
+    ax2 = ax1.twinx()
+    
+    # 绘制用户数量线图
+    ax2.plot(group_stats['share_group'], group_stats['count'], 'o-', color='#e74c3c', linewidth=2)
+    ax2.set_ylabel('用户数量', fontsize=12, color='#e74c3c')
+    ax2.tick_params(axis='y', labelcolor='#e74c3c')
+    
+    # 添加数据标签
+    for i, v in enumerate(group_stats['count']):
+        ax2.text(i, v + 0.1, f'{v:,}', ha='center', va='bottom', color='#e74c3c')
+    
+    plt.title('不同活跃度用户的平均回流率', fontsize=16, fontweight='bold')
+    fig.tight_layout()
+    plt.savefig('results/figures/advanced/return_rate_by_activity.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户回流分析图时出错: {e}")
+
+# 9. 用户与商品的双向聚类图
+try:
+    print("生成用户与商品的双向聚类图...")
+    
+    # 选择活跃用户和热门商品
+    top_users = train_data['inviter_id'].value_counts().nlargest(30).index
+    top_items = train_data['item_id'].value_counts().nlargest(30).index
+    
+    # 过滤数据
+    filtered_data = train_data[
+        (train_data['inviter_id'].isin(top_users)) & 
+        (train_data['item_id'].isin(top_items))
+    ]
+    
+    # 创建用户-商品矩阵
+    user_item_matrix = pd.crosstab(filtered_data['inviter_id'], filtered_data['item_id'])
+    
+    # 使用对数变换使数据更易于可视化
+    user_item_matrix = np.log1p(user_item_matrix)
+    
+    plt.figure(figsize=(16, 12))
+    
+    # 创建聚类热图
+    cmap = sns.color_palette("YlOrRd", as_cmap=True)
+    sns.clustermap(user_item_matrix, cmap=cmap, figsize=(16, 12),
+                  row_cluster=True, col_cluster=True,
+                  linewidths=0.1, xticklabels=1, yticklabels=1)
+    
+    plt.savefig('results/figures/advanced/user_item_clustering.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成用户与商品的双向聚类图时出错: {e}")
+
+# 10. 商品分享与回流的相关性分析
+try:
+    print("生成商品分享与回流的相关性分析图...")
+    
+    # 计算每个商品的分享次数和回流用户数
+    item_stats = train_data.groupby('item_id').agg(
+        shares=('inviter_id', 'count'),
+        unique_voters=('voter_id', 'nunique')
+    ).reset_index()
+    
+    # 计算回流率
+    item_stats['return_rate'] = item_stats['unique_voters'] / item_stats['shares']
+    
+    # 过滤掉异常值
+    filtered_items = item_stats[item_stats['shares'] >= 5]  # 至少有5次分享
+    
+    plt.figure(figsize=(12, 8))
+    
+    # 绘制散点图
+    sns.scatterplot(x='shares', y='unique_voters', data=filtered_items, 
+                   alpha=0.6, s=50, hue='return_rate', palette='viridis')
+    
+    plt.title('商品分享次数与回流用户数的关系', fontsize=16, fontweight='bold')
+    plt.xlabel('分享次数', fontsize=12)
+    plt.ylabel('回流用户数', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    
+    # 添加回归线
+    sns.regplot(x='shares', y='unique_voters', data=filtered_items, 
+               scatter=False, ci=None, color='red')
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/item_share_return_correlation.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # 对数刻度版本
+    plt.figure(figsize=(12, 8))
+    
+    # 先转换为对数
+    filtered_items['log_shares'] = np.log1p(filtered_items['shares'])
+    filtered_items['log_voters'] = np.log1p(filtered_items['unique_voters'])
+    
+    # 绘制散点图（使用已转换的数据）
+    sns.scatterplot(x='log_shares', y='log_voters', data=filtered_items, 
+                   alpha=0.6, s=50, hue='return_rate', palette='viridis')
+    
+    plt.title('商品分享次数与回流用户数的关系（对数刻度）', fontsize=16, fontweight='bold')
+    plt.xlabel('分享次数（对数）', fontsize=12)
+    plt.ylabel('回流用户数（对数）', fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    
+    # 添加回归线（使用已转换的数据）
+    sns.regplot(x='log_shares', y='log_voters', data=filtered_items, 
+               scatter=False, ci=None, color='red')
+    
+    plt.tight_layout()
+    plt.savefig('results/figures/advanced/item_share_return_correlation_log.png', dpi=300, bbox_inches='tight')
+    plt.close()
+except Exception as e:
+    print(f"生成商品分享与回流的相关性分析图时出错: {e}")
+
+print("额外的高级可视化图表生成完成！") 
