@@ -8,16 +8,19 @@ import os
 from tqdm import tqdm
 import networkx as nx
 from collections import Counter
+import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib import cm
 from cycler import cycler
-
-# 设置中文显示
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
-plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+import matplotlib.font_manager as fm
+import matplotlib
+import sys
+import logging
+from datetime import datetime
 
 # 设置精美的图表样式
 plt.style.use('seaborn-v0_8-whitegrid')
+plt.rcParams['font.sans-serif'] = ['FangSong']
 plt.rcParams['figure.facecolor'] = 'white'
 plt.rcParams['axes.facecolor'] = 'white'
 plt.rcParams['axes.grid'] = True
@@ -308,6 +311,7 @@ plt.figure(figsize=(10, 6))
 gender_counts = user_info['user_gender'].value_counts()
 gender_labels = {-1: '未知', 0: '女性', 1: '男性'}
 gender_counts.index = [gender_labels[i] for i in gender_counts.index]
+
 ax = sns.barplot(x=gender_counts.index, y=gender_counts.values, palette=['#95a5a6', '#e74c3c', '#3498db'])
 plt.title('用户性别分布', fontsize=16, fontweight='bold')
 plt.ylabel('用户数量', fontsize=12)
@@ -323,10 +327,14 @@ for i, v in enumerate(gender_counts.values):
     percentage = v / total * 100
     ax.text(i, v/2, f'{percentage:.1f}%', ha='center', color='white', fontweight='bold')
 
+# 手动设置x轴刻度标签字体
+plt.xticks(plt.xticks()[0], gender_counts.index)
+
 plt.savefig('results/figures/user_gender_distribution.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 # 2. 用户年龄段分布
+
 plt.figure(figsize=(12, 6))
 age_counts = user_info['user_age'].value_counts().sort_index()
 age_counts.index = ['未知' if i == -1 else f'年龄段{i}' for i in age_counts.index]
@@ -414,6 +422,7 @@ plt.close()
 # 按日期统计分享数量
 try:
     print("生成每日分享数量变化图...")
+
     plt.figure(figsize=(14, 7))
     date_counts = train_data['date'].value_counts().sort_index()
     
@@ -450,6 +459,7 @@ except Exception as e:
 # 按小时统计分享数量
 try:
     print("生成各小时分享数量分布图...")
+
     plt.figure(figsize=(12, 6))
     hour_counts = train_data['hour'].value_counts().sort_index()
     
@@ -483,6 +493,7 @@ except Exception as e:
 # 按星期几统计分享数量
 try:
     print("生成各星期几分享数量分布图...")
+
     plt.figure(figsize=(10, 6))
     weekday_counts = train_data['day_of_week'].value_counts().sort_index()
     
@@ -526,16 +537,16 @@ except Exception as e:
 # 8. 用户活跃度分析
 try:
     print("生成用户活跃度分布图...")
+
     inviter_counts = train_data['inviter_id'].value_counts()
     voter_counts = train_data['voter_id'].value_counts()
-    
+
     plt.figure(figsize=(16, 8))
     
     # 使用子图1：邀请者活跃度
     plt.subplot(1, 2, 1)
     # 使用更好的颜色和样式
-    sns.histplot(inviter_counts, bins=50, kde=True, color='#3498db', 
-                 kde_kws={'color': '#e74c3c', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(inviter_counts, bins=50, kde=True, color='#3498db')
     
     plt.title('邀请者活跃度分布', fontsize=16, fontweight='bold')
     plt.xlabel('邀请次数', fontsize=12)
@@ -554,8 +565,7 @@ try:
     
     # 使用子图2：回流者活跃度
     plt.subplot(1, 2, 2)
-    sns.histplot(voter_counts, bins=50, kde=True, color='#2ecc71',
-                kde_kws={'color': '#9b59b6', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(voter_counts, bins=50, kde=True, color='#2ecc71')
     
     plt.title('回流者活跃度分布', fontsize=16, fontweight='bold')
     plt.xlabel('回流次数', fontsize=12)
@@ -581,8 +591,7 @@ try:
     
     # 使用子图1：邀请者活跃度（对数尺度）
     plt.subplot(1, 2, 1)
-    sns.histplot(np.log1p(inviter_counts), bins=50, kde=True, color='#3498db',
-                kde_kws={'color': '#e74c3c', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(np.log1p(inviter_counts), bins=50, kde=True, color='#3498db')
     
     plt.title('邀请者活跃度分布（对数尺度）', fontsize=16, fontweight='bold')
     plt.xlabel('邀请次数（对数）', fontsize=12)
@@ -591,8 +600,7 @@ try:
     
     # 使用子图2：回流者活跃度（对数尺度）
     plt.subplot(1, 2, 2)
-    sns.histplot(np.log1p(voter_counts), bins=50, kde=True, color='#2ecc71',
-                kde_kws={'color': '#9b59b6', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(np.log1p(voter_counts), bins=50, kde=True, color='#2ecc71')
     
     plt.title('回流者活跃度分布（对数尺度）', fontsize=16, fontweight='bold')
     plt.xlabel('回流次数（对数）', fontsize=12)
@@ -620,6 +628,7 @@ try:
     in_degrees = dict(G.in_degree())
     out_degrees = dict(G.out_degree())
     
+
     plt.figure(figsize=(16, 8))
     
     # 入度分布
@@ -627,8 +636,7 @@ try:
     in_degree_values = list(in_degrees.values())
     
     # 使用更美观的颜色和样式
-    sns.histplot(in_degree_values, bins=30, kde=True, color='#3498db',
-                kde_kws={'color': '#e74c3c', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(in_degree_values, bins=30, kde=True, color='#3498db')
     
     plt.title('入度分布', fontsize=16, fontweight='bold')
     plt.xlabel('入度', fontsize=12)
@@ -649,13 +657,12 @@ try:
     plt.subplot(1, 2, 2)
     out_degree_values = list(out_degrees.values())
     
-    sns.histplot(out_degree_values, bins=30, kde=True, color='#2ecc71',
-                kde_kws={'color': '#9b59b6', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(out_degree_values, bins=30, kde=True, color='#2ecc71')
     
     plt.title('出度分布', fontsize=16, fontweight='bold')
     plt.xlabel('出度', fontsize=12)
     plt.ylabel('节点数量', fontsize=12)
-    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
     
     # 添加统计信息
     avg_out = np.mean(out_degree_values)
@@ -679,8 +686,7 @@ try:
     # 避免log(0)
     log_in_degrees = [np.log1p(d) for d in in_degree_values if d > 0]
     
-    sns.histplot(log_in_degrees, bins=30, kde=True, color='#3498db',
-                kde_kws={'color': '#e74c3c', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(log_in_degrees, bins=30, kde=True, color='#3498db')
     
     plt.title('入度分布（对数尺度）', fontsize=16, fontweight='bold')
     plt.xlabel('入度（对数）', fontsize=12)
@@ -692,8 +698,7 @@ try:
     # 避免log(0)
     log_out_degrees = [np.log1p(d) for d in out_degree_values if d > 0]
     
-    sns.histplot(log_out_degrees, bins=30, kde=True, color='#2ecc71',
-                kde_kws={'color': '#9b59b6', 'linewidth': 2, 'alpha': 0.8})
+    sns.histplot(log_out_degrees, bins=30, kde=True, color='#2ecc71')
     
     plt.title('出度分布（对数尺度）', fontsize=16, fontweight='bold')
     plt.xlabel('出度（对数）', fontsize=12)
@@ -726,6 +731,7 @@ if 'hour' in train_data.columns and 'day_of_week' in train_data.columns:
         weekday_names = {0: '周一', 1: '周二', 2: '周三', 3: '周四', 4: '周五', 5: '周六', 6: '周日'}
         hour_weekday.columns = [weekday_names[col] for col in hour_weekday.columns]
         
+
         plt.figure(figsize=(12, 10))
         
         # 使用更好的颜色映射和注释格式
@@ -765,6 +771,7 @@ if 'date' in train_data.columns:
         # 计算7天移动平均
         date_counts_df['7day_ma'] = date_counts_df['count'].rolling(window=7).mean()
         
+
         plt.figure(figsize=(16, 8))
         
         # 使用渐变填充区域
@@ -840,6 +847,7 @@ print("生成额外的数据可视化...")
 
 # 1. 用户行为分析
 # 1.1 Top 20 最活跃的邀请者
+
 plt.figure(figsize=(12, 8))
 top_inviters = train_data['inviter_id'].value_counts().nlargest(20)
 ax = sns.barplot(x=top_inviters.values, y=top_inviters.index, palette=sns.color_palette("viridis", 20))
@@ -857,6 +865,7 @@ plt.savefig('results/figures/user_analysis/top20_inviters.png', dpi=300, bbox_in
 plt.close()
 
 # 1.2 Top 20 最活跃的回流者
+
 plt.figure(figsize=(12, 8))
 top_voters = train_data['voter_id'].value_counts().nlargest(20)
 ax = sns.barplot(x=top_voters.values, y=top_voters.index, palette=sns.color_palette("plasma", 20))
@@ -883,6 +892,7 @@ if 'user_gender' in user_info.columns:
         how='left'
     )
     
+
     plt.figure(figsize=(10, 6))
     # 替换性别代码为可读标签
     inviter_gender['gender_label'] = inviter_gender['user_gender'].map({-1: '未知', 0: '女性', 1: '男性'})
@@ -914,6 +924,7 @@ if 'user_gender' in user_info.columns:
     plt.close()
     
     # 添加0-10000区间的图
+
     plt.figure(figsize=(10, 6))
     limited_data = inviter_gender[inviter_gender['invite_count'] <= 10000]
     
@@ -949,6 +960,7 @@ if 'user_age' in user_info.columns:
         how='left'
     )
     
+
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='user_age', y='invite_count', data=inviter_age)
     plt.title('不同年龄段用户的邀请活跃度分布')
@@ -959,6 +971,7 @@ if 'user_age' in user_info.columns:
     plt.close()
     
     # 添加0-10000区间的图
+
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='user_age', y='invite_count', data=inviter_age[inviter_age['invite_count'] <= 10000])
     plt.title('不同年龄段用户的邀请活跃度分布 (0-10000区间)')
@@ -978,6 +991,7 @@ if 'user_level' in user_info.columns:
         how='left'
     )
     
+
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='user_level', y='invite_count', data=inviter_level)
     plt.title('不同等级用户的邀请活跃度分布')
@@ -987,6 +1001,7 @@ if 'user_level' in user_info.columns:
     plt.close()
     
     # 添加0-10000区间的图
+
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='user_level', y='invite_count', data=inviter_level[inviter_level['invite_count'] <= 10000])
     plt.title('不同等级用户的邀请活跃度分布 (0-10000区间)')
@@ -997,6 +1012,7 @@ if 'user_level' in user_info.columns:
 
 # 2. 商品特征分析
 # 2.1 Top 20 最受欢迎的商品
+
 plt.figure(figsize=(12, 8))
 top_items = train_data['item_id'].value_counts().nlargest(20)
 ax = sns.barplot(x=top_items.values, y=top_items.index, palette=sns.color_palette("YlOrRd", 20))
@@ -1026,6 +1042,7 @@ if 'cate_id' in item_info.columns:
     # 按类别统计平均分享次数
     category_avg_shares = item_category.groupby('cate_id')['share_count'].mean().nlargest(20)
     
+
     plt.figure(figsize=(14, 8))
     ax = sns.barplot(x=category_avg_shares.index, y=category_avg_shares.values, 
                     palette=sns.color_palette("Blues_r", len(category_avg_shares)))
@@ -1045,6 +1062,7 @@ if 'cate_id' in item_info.columns:
     plt.close()
     
     # 添加箱线图展示分布
+
     plt.figure(figsize=(16, 8))
     top_categories = item_category['cate_id'].value_counts().nlargest(10).index
     category_data = item_category[item_category['cate_id'].isin(top_categories)]
@@ -1074,6 +1092,7 @@ if 'cate_level1_id' in item_info.columns:
     # 按一级类目统计平均分享次数
     category1_avg_shares = item_category1.groupby('cate_level1_id')['share_count'].mean().nlargest(20)
     
+
     plt.figure(figsize=(14, 8))
     sns.barplot(x=category1_avg_shares.index, y=category1_avg_shares.values)
     plt.title('不同一级类目商品的平均分享次数 (Top 20)')
@@ -1097,6 +1116,7 @@ if 'brand_id' in item_info.columns:
     # 按品牌统计平均分享次数
     brand_avg_shares = item_brand.groupby('brand_id')['share_count'].mean().nlargest(20)
     
+
     plt.figure(figsize=(14, 8))
     sns.barplot(x=brand_avg_shares.index, y=brand_avg_shares.values)
     plt.title('不同品牌商品的平均分享次数 (Top 20)')
@@ -1126,6 +1146,8 @@ try:
     # 节点大小基于度数，使用对数缩放以更好地显示
     node_size = [max(20, np.log1p(total_degrees.get(node, 0)) * 30) for node in G.nodes()]
     
+    # 使用更好的布局算法
+
     plt.figure(figsize=(20, 20), facecolor='white')
     
     # 使用更好的布局算法
@@ -1200,6 +1222,8 @@ try:
     edges = list(zip(sample_data['inviter_id'], sample_data['item_id']))
     B.add_edges_from(edges)
     
+    # 使用更好的布局算法
+
     plt.figure(figsize=(20, 16), facecolor='white')
     
     # 使用二部图专用布局
@@ -1265,26 +1289,5 @@ try:
 except Exception as e:
     print(f"生成邀请者-商品二部图时出错: {e}")
     # 跳过这个可视化，继续执行后面的代码
-
-# 4.3 用户活跃度分布（对数坐标）
-try:
-    print("生成用户活跃度分布图（对数坐标）...")
-    plt.figure(figsize=(12, 8))
-    plt.subplot(1, 2, 1)
-    sns.histplot(np.log1p(train_data['inviter_id'].value_counts()), bins=50, kde=True)
-    plt.title('邀请者活跃度分布（对数坐标）')
-    plt.xlabel('邀请次数（对数）')
-    plt.ylabel('用户数量')
-    
-    plt.subplot(1, 2, 2)
-    sns.histplot(np.log1p(train_data['voter_id'].value_counts()), bins=50, kde=True)
-    plt.title('回流者活跃度分布（对数坐标）')
-    plt.xlabel('回流次数（对数）')
-    plt.ylabel('用户数量')
-    plt.tight_layout()
-    plt.savefig('results/figures/network_analysis/user_activity_log_distribution.png')
-    plt.close()
-except Exception as e:
-    print(f"生成用户活跃度分布图时出错: {e}")
 
 print("数据预处理和可视化完成！结果保存在 results 文件夹中。") 
